@@ -16,18 +16,18 @@ router.post('/login', (req, res, next) => {
   const loginLimiter = req.app.get('loginLimiter');
   loginLimiter(req, res, async () => {
     try {
-      const { username, password } = req.body;
+      const { email, phone, password } = req.body;
 
-      if (!username || !password) {
-        return res.status(400).json({ error: 'Username e password richiesti.' });
+      if (!email || !phone || !password) {
+        return res.status(400).json({ error: 'Email, Telefono e Password richiesti.' });
       }
 
       // Carica utenti
       const users = fileManager.loadUsers();
-      const user  = users.find(u => u.username === username.toLowerCase().trim());
+      const user  = users.find(u => u.email === email.toLowerCase().trim() && u.phone === phone.trim());
 
       if (!user) {
-        // Risposta generica per non rivelare se l'username esiste
+        // Risposta generica per non rivelare l'esistenza
         return res.status(401).json({ error: 'Credenziali non valide.' });
       }
 
@@ -44,7 +44,7 @@ router.post('/login', (req, res, next) => {
       return res.json({
         success:  true,
         message:  'Login effettuato con successo.',
-        user:     { id: user.id, username: user.username, role: user.role },
+        user:     { id: user.id, email: user.email, phone: user.phone, role: user.role },
       });
 
     } catch (err) {
@@ -65,10 +65,38 @@ router.get('/me', requireAuth, (req, res) => {
     authenticated: true,
     user: {
       id:       req.user.id,
-      username: req.user.username,
+      email:    req.user.email,
+      phone:    req.user.phone,
       role:     req.user.role,
     },
   });
+});
+
+// ── POST /api/settings — Aggiorna Profilo ────────────────────
+router.post('/settings', requireAuth, (req, res) => {
+  try {
+    const { email, phone } = req.body;
+    const users = fileManager.loadUsers();
+    const userIndex = users.findIndex(u => u.id === req.user.id);
+    
+    if (userIndex === -1) {
+      return res.status(404).json({ error: 'Utente non trovato' });
+    }
+    
+    users[userIndex].email = email.toLowerCase().trim();
+    users[userIndex].phone = phone.trim();
+    
+    fileManager.saveUsers(users); // Aggiungeremo questo metodo a fileManager
+    
+    // Aggiorna req.user e rigenera il token? Opzionale ma consigliato
+    const updatedUser = users[userIndex];
+    const token = signToken(updatedUser);
+    setSessionCookie(res, token);
+    
+    return res.json({ success: true, message: 'Impostazioni aggiornate' });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
 });
 
 module.exports = router;

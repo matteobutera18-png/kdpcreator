@@ -14,7 +14,7 @@ const activeJobs = new Map();
 
 // ── POST /api/agents/generate — Avvia pipeline ───────────────
 router.post('/generate', requireAuth, async (req, res) => {
-  const { categoria, subNiche } = req.body;
+  const { categoria, subNiche, difficulty } = req.body;
 
   if (!categoria) {
     return res.status(400).json({ error: 'Categoria richiesta.' });
@@ -23,10 +23,10 @@ router.post('/generate', requireAuth, async (req, res) => {
   const jobId = uuidv4();
 
   // Registra il job come "in attesa"
-  activeJobs.set(jobId, { status: 'pending', categoria, subNiche, createdAt: new Date().toISOString() });
+  activeJobs.set(jobId, { status: 'pending', categoria, subNiche, difficulty, createdAt: new Date().toISOString() });
 
   // Avvia la pipeline in background (non-blocking)
-  orchestrator.runPipeline(jobId, categoria, activeJobs).catch(err => {
+  orchestrator.runPipeline(jobId, categoria, activeJobs, difficulty).catch(err => {
     const job = activeJobs.get(jobId);
     if (job) job.status = 'error';
     console.error(`❌ Pipeline ${jobId} fallita:`, err.message);

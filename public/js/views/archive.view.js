@@ -130,7 +130,12 @@ export async function renderArchive(root) {
                 <div class="detail-section">
                   <div class="detail-title">Download File Originali</div>
                   <div style="display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap;">
-                    <a href="/api/books/${slug}/download/libro" class="btn-secondary" style="text-decoration: none;" download>⬇️ Libro 6x9</a>
+                    ${detail.metadata.isColoringBook ? `
+                      <a href="/api/books/${slug}/download/pdf" class="btn-secondary" style="text-decoration: none; color: var(--accent-blue); border-color: var(--accent-blue);" download>⬇️ Libro PDF (Interno)</a>
+                      <a href="/api/books/${slug}/download/cover" class="btn-secondary" style="text-decoration: none; color: var(--accent-secondary); border-color: var(--accent-secondary);" download>⬇️ Copertina PDF (Wrap)</a>
+                    ` : `
+                      <a href="/api/books/${slug}/download/libro" class="btn-secondary" style="text-decoration: none;" download>⬇️ Libro 6x9 (TXT)</a>
+                    `}
                     <a href="/api/books/${slug}/download/metadati" class="btn-secondary" style="text-decoration: none;" download>⬇️ Metadati JSON</a>
                     <a href="/api/books/${slug}/download/prompt" class="btn-secondary" style="text-decoration: none;" download>⬇️ Prompt TXT</a>
                   </div>

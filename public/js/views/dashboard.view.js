@@ -12,6 +12,7 @@ export function renderDashboard(root) {
       <div class="logo-text">KDP FACTORY</div>
       <div class="nav-buttons">
         <button class="icon-btn" id="btn-archive" title="Archivio Libri">📚</button>
+        <button class="icon-btn" id="btn-settings" title="Impostazioni">⚙️</button>
         <button class="icon-btn" id="btn-logout" title="Esci">🚪</button>
       </div>
     </div>
@@ -32,13 +33,20 @@ export function renderDashboard(root) {
       <!-- Sotto-Nicchia Coloring Books (visibile solo se categoria è Coloring Books) -->
       <div id="coloring-options" style="display: none; margin-bottom: 20px; animation: fadeIn 0.3s ease;">
         <label class="input-label" style="color: var(--accent-blue);">Nicchia Disegni</label>
-        <select id="coloring-niche-select" class="input-field" style="background: rgba(0, 210, 255, 0.05); border-color: rgba(0, 210, 255, 0.3);">
+        <select id="coloring-niche-select" class="input-field" style="background: rgba(0, 210, 255, 0.05); border-color: rgba(0, 210, 255, 0.3); margin-bottom: 12px;">
           <option value="Mandala">Mandala Geometrici / Floreali</option>
           <option value="Animali">Animali della Giungla / Foresta</option>
           <option value="Fantasy">Mondo Fantasy (Fate, Draghi, Magia)</option>
         </select>
+        
+        <label class="input-label" style="color: var(--accent-blue);">Difficoltà</label>
+        <select id="coloring-difficulty" class="input-field" style="background: rgba(0, 210, 255, 0.05); border-color: rgba(0, 210, 255, 0.3);">
+          <option value="Bambini">Bambini (Linee Spesse, Facile)</option>
+          <option value="Adulti">Adulti (Dettagliato, Complesso)</option>
+        </select>
+        
         <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 8px;">
-          L'agente genererà prompt per Midjourney in puro bianco e nero (Line Art) e un PDF 8.5"x11" con blank pages.
+          L'agente genererà un PDF 8.5"x11" e la Copertina automatica calcolata in base alle pagine.
         </p>
       </div>
 
@@ -50,6 +58,17 @@ export function renderDashboard(root) {
 
     <!-- UI Pipeline Agenti -->
     ${createAgentStatusUI()}
+    
+    <!-- Live Preview Container -->
+    <div id="live-preview" class="live-preview-container">
+      <div class="live-preview-title">
+        <span>👁️ Live Preview</span>
+        <span style="font-size:0.7rem; opacity:0.7">Generazione in corso...</span>
+      </div>
+      <div id="preview-grid" class="live-preview-grid">
+         <!-- Le immagini appariranno qui -->
+      </div>
+    </div>
   `;
 
   // ── Event Listeners ─────────────────────────────────────────
@@ -76,6 +95,10 @@ export function renderDashboard(root) {
     window.location.hash = '#/archive';
   });
 
+  document.getElementById('btn-settings').addEventListener('click', () => {
+    window.location.hash = '#/settings';
+  });
+
   document.getElementById('btn-logout').addEventListener('click', async () => {
     await API.logout();
     window.location.hash = '#/login';
@@ -84,7 +107,9 @@ export function renderDashboard(root) {
   // Avvio Generazione
   document.getElementById('btn-generate').addEventListener('click', async (e) => {
     const btn = e.target.closest('button');
-    const subNiche = selectedCategory === 'Coloring Books' ? document.getElementById('coloring-niche-select').value : null;
+    const isColoring = selectedCategory === 'Coloring Books';
+    const subNiche = isColoring ? document.getElementById('coloring-niche-select').value : null;
+    const difficulty = isColoring ? document.getElementById('coloring-difficulty').value : null;
     
     try {
       btn.disabled = true;
@@ -93,22 +118,44 @@ export function renderDashboard(root) {
       // Resetta UI agenti
       resetAgentStatusUI();
       
+      const livePreview = document.getElementById('live-preview');
+      const previewGrid = document.getElementById('preview-grid');
+      
+      if (isColoring) {
+        livePreview.style.display = 'block';
+        previewGrid.innerHTML = ''; // resetta le immagini
+      } else {
+        livePreview.style.display = 'none';
+      }
+      
       // Chiama API
-      const res = await API.generateBook(selectedCategory, subNiche);
+      const res = await API.generateBook(selectedCategory, subNiche, difficulty);
       
       // Ascolta SSE Stream per questo job
-      API.listenToJob(res.jobId, (finalData) => {
-        // Al completamento
-        btn.disabled = false;
-        btn.innerHTML = '<span style="font-size: 1.5rem;">⚡</span> AVVIA NUOVA GENERAZIONE';
-        
-        // Chiedi all'utente se vuole vedere il libro in archivio
-        setTimeout(() => {
-          if(confirm(`Il libro "${finalData.titolo}" è pronto!\nVuoi aprirlo nell'archivio?`)) {
-            window.location.hash = '#/archive';
-          }
-        }, 1000);
-      });
+      API.listenToJob(res.jobId, 
+        // onComplete
+        (finalData) => {
+          btn.disabled = false;
+          btn.innerHTML = '<span style="font-size: 1.5rem;">⚡</span> AVVIA NUOVA GENERAZIONE';
+          
+          setTimeout(() => {
+            if(confirm(`Il libro "${finalData.titolo}" è pronto!\nVuoi aprirlo nell'archivio?`)) {
+              window.location.hash = '#/archive';
+            }
+          }, 1000);
+        },
+        // onProgress (passa dati opzionali come l'immagine URL)
+        (data) => {
+           if (data.imageUrl) {
+              const img = document.createElement('img');
+              img.src = data.imageUrl;
+              img.className = 'preview-img';
+              previewGrid.appendChild(img);
+              // scrolla giù
+              previewGrid.scrollTop = previewGrid.scrollHeight;
+           }
+        }
+      );
 
     } catch (err) {
       showToast(err.message, 'error');

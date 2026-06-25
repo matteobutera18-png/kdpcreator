@@ -142,9 +142,9 @@ async function runPipeline(jobId, categoria, activeJobs) {
         });
         await sleep(600);
         
-        contentResult = await coloringAgent.run(scoutResult, (msg, percent) => {
-            emit(activeJobs, jobId, 'agent_progress', { agent: 'writer', message: msg, percent });
-        }, scoutResult.slug);
+        contentResult = await coloringAgent.run(scoutResult, (msg, percent, data = {}) => {
+            emit(activeJobs, jobId, 'agent_progress', { agent: 'writer', message: msg, percent, ...data });
+        }, scoutResult.slug, job.difficulty);
     } else {
         emit(activeJobs, jobId, 'agent_start', {
           agent:   'writer',
@@ -220,6 +220,7 @@ Stile: Professional book cover, intricate ${scoutResult.nicchia} line art center
       categoria,
       isColoringBook: isColoring,
       pdfPath:        isColoring ? contentResult.pdfPath : undefined,
+      coverPath:      isColoring ? contentResult.coverPath : undefined,
       keywords:       scoutResult.keywords,
       descrizione:    scoutResult.descrizione,
       categorie_kdp:  scoutResult.categorie_kdp,

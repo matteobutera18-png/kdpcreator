@@ -7,8 +7,12 @@ const fs = require('fs');
 const path = require('path');
 const PDFDocument = require('pdfkit');
 
-function getPromptsByNiche(nicchia, numPagine) {
-  const baseStyle = "black and white line art, clean precise lines, coloring book page, no shading, pure white background, vector style, flat design, uncolored, high resolution";
+function getPromptsByNiche(nicchia, numPagine, difficulty) {
+  const diffStyle = difficulty === 'Bambini' 
+    ? "simple, thick bold lines, easy to color, very few details, large shapes" 
+    : "intricate, extremely detailed, highly complex, fine lines, mandala patterns";
+    
+  const baseStyle = `black and white line art, pure white background, vector style, flat design, uncolored, ${diffStyle}`;
   let subjects = [];
 
   const nicheMap = {
@@ -55,11 +59,11 @@ function getPromptsByNiche(nicchia, numPagine) {
 }
 
 // ─────────────────────────────────────────────────────────────
-//  ESECUZIONE AGENTE CON GENERAZIONE PDF REALE
+//  ESECUZIONE AGENTE CON GENERAZIONE PDF REALE E COVER
 // ─────────────────────────────────────────────────────────────
-async function run(scoutResult, updateProgress, slug) {
-  const numPagine = 10; // Per demo veloce mettiamo 10, ma si può portare a 30
-  const prompts = getPromptsByNiche(scoutResult.nicchia, numPagine);
+async function run(scoutResult, updateProgress, slug, difficulty) {
+  const numPagine = 10; // Demo
+  const prompts = getPromptsByNiche(scoutResult.nicchia, numPagine, difficulty);
   
   // Creiamo una directory temporanea per scaricare le immagini
   const tmpDir = path.join(__dirname, '..', 'data', 'tmp_images', slug);
@@ -69,13 +73,13 @@ async function run(scoutResult, updateProgress, slug) {
 
   // Scaricamento immagini via Pollinations AI
   for (let i = 0; i < prompts.length; i++) {
-    if (updateProgress) {
-        updateProgress(`🎨 Generazione Immagine ${i+1}/${prompts.length}... (Potrebbe richiedere alcuni secondi)`, Math.round((i / prompts.length) * 50));
-    }
-    
-    // Seed casuale per variare l'immagine anche con stesso prompt
     const seed = Math.floor(Math.random() * 999999999); 
     const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompts[i])}?width=825&height=1065&nologo=true&seed=${seed}`;
+    
+    if (updateProgress) {
+        // Send image URL for Live Preview
+        updateProgress(`🎨 Generazione Immagine ${i+1}/${prompts.length}... (Potrebbe richiedere alcuni secondi)`, Math.round((i / prompts.length) * 50), { imageUrl: url });
+    }
     
     try {
        const response = await fetch(url);
@@ -140,22 +144,74 @@ async function run(scoutResult, updateProgress, slug) {
 
       doc.end();
 
-      writeStream.on('finish', () => {
+      writeStream.on('finish', async () => {
+          
+          if (updateProgress) updateProgress(`📄 Generazione Copertina (Fronte + Retro) in corso...`, 90);
+          
+          // Generazione Cover PDF Wrap
+          // KDP Formula: Dorso = numPagine * 0.0022525 pollici (con carta bianca). 
+          // Pagine totali interne = numPagine * 2 + 2
+          const totalPages = numPagine * 2 + 2;
+          const spineInches = Math.max(totalPages * 0.0022525, 0.1); 
+          const spinePoints = spineInches * 72; // Converti pollici in punti (1 pollice = 72 pt)
+          
+          const coverWidth = (8.5 * 72 * 2) + spinePoints;
+          const coverHeight = 11 * 72;
+          
+          const coverPdfPath = path.join(__dirname, '..', 'data', 'books', slug, `Cover_8.5x11.pdf`);
+          const coverDoc = new PDFDocument({
+              size: [coverWidth, coverHeight],
+              margins: { top: 0, bottom: 0, left: 0, right: 0 },
+          });
+          const coverWriteStream = fs.createWriteStream(coverPdfPath);
+          coverDoc.pipe(coverWriteStream);
+          
+          // Sfondo cover (colore dark blueish)
+          coverDoc.rect(0, 0, coverWidth, coverHeight).fill('#1E1E2E');
+          
+          // Testo Retro (sinistra)
+          coverDoc.fill('#FFFFFF').fontSize(16).text('Un meraviglioso libro da colorare creato da KDP Factory.', 50, 100, { width: 8.5*72 - 100, align: 'center' });
+          coverDoc.fontSize(12).text(`Nicchia: ${scoutResult.nicchia.toUpperCase()}\nDifficoltà: ${difficulty}`, 50, 200, { width: 8.5*72 - 100, align: 'center' });
+          
+          // Dorso (centro)
+          coverDoc.save();
+          // Trasla al centro esatto
+          coverDoc.translate(8.5*72 + (spinePoints/2), coverHeight/2);
+          coverDoc.rotate(-90);
+          coverDoc.fontSize(10).fill('#FFFFFF').text(scoutResult.titolo.toUpperCase(), 0, -5, { align: 'center', width: coverHeight });
+          coverDoc.restore();
+          
+          // Testo Fronte (destra)
+          const frontX = 8.5*72 + spinePoints;
+          coverDoc.fill('#FFFFFF').font('Helvetica-Bold').fontSize(36).text(scoutResult.titolo.toUpperCase(), frontX + 50, 100, { width: 8.5*72 - 100, align: 'center' });
+          
+          // Aggiungiamo l'ultima immagine generata come copertina frontale se esiste
+          if (imagePaths.length > 0) {
+              try {
+                  coverDoc.image(imagePaths[imagePaths.length - 1], frontX + (8.5*72/2) - 150, 250, { width: 300 });
+              } catch(e){}
+          }
+          
+          coverDoc.end();
+          
+          await new Promise(res => coverWriteStream.on('finish', res));
+
           // Cleanup delle immagini temporanee
           try {
              for (const p of imagePaths) fs.unlinkSync(p);
              fs.rmdirSync(tmpDir);
           } catch(e) { console.error('Errore cleanup tmp dir:', e); }
 
-          if (updateProgress) updateProgress(`✅ PDF Generato con successo!`, 100);
+          if (updateProgress) updateProgress(`✅ PDF e Copertina Generati con successo!`, 100);
 
           resolve({
-              testo: `[PDF REALE GENERATO] Il libro da colorare è stato impaginato e salvato in PDF.\nTroverai il file pdf nell'archivio o tramite download diretto.`,
-              pagineStimate: numPagine * 2 + 2, // 1 disegno + 1 bianca + 2 di intro
+              testo: `[PDF REALE GENERATO] Il libro da colorare è stato impaginato e salvato in PDF assieme alla sua Copertina.\nTroverai i file nell'archivio.`,
+              pagineStimate: totalPages,
               parole: 0, 
               outline: [], // non serve l'outline fittizio
               isColoringBook: true,
-              pdfPath: pdfPath
+              pdfPath: pdfPath,
+              coverPath: coverPdfPath
           });
       });
 

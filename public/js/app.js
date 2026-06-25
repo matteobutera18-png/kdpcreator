@@ -6,6 +6,7 @@ import { API } from './api.js';
 import { renderLogin } from './views/login.view.js';
 import { renderDashboard } from './views/dashboard.view.js';
 import { renderArchive } from './views/archive.view.js';
+import { renderSettings } from './views/settings.view.js';
 
 const root = document.getElementById('app-root');
 
@@ -42,6 +43,9 @@ async function router() {
         break;
       case '#/archive':
         renderArchive(root);
+        break;
+      case '#/settings':
+        renderSettings(root);
         break;
       default:
         window.location.hash = '#/dashboard';

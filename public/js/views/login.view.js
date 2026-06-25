@@ -15,8 +15,13 @@ export function renderLogin(root) {
 
       <form id="login-form">
         <div class="input-group">
-          <label class="input-label">Username</label>
-          <input type="text" id="username" class="input-field" value="admin" required autocomplete="username">
+          <label class="input-label">E-mail</label>
+          <input type="email" id="email" class="input-field" placeholder="es. admin@kdpfactory.com" required autocomplete="email">
+        </div>
+
+        <div class="input-group">
+          <label class="input-label">Numero di Telefono</label>
+          <input type="tel" id="phone" class="input-field" placeholder="es. +39 333 1234567" required autocomplete="tel">
         </div>
         
         <div class="input-group">
@@ -31,13 +36,14 @@ export function renderLogin(root) {
     </div>
   `;
 
-  // Focus sul campo password (visto che admin è precompilato)
-  setTimeout(() => document.getElementById('password')?.focus(), 100);
+  // Focus sul primo campo
+  setTimeout(() => document.getElementById('email')?.focus(), 100);
 
   document.getElementById('login-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = e.target.querySelector('button');
-    const user = document.getElementById('username').value;
+    const email = document.getElementById('email').value;
+    const phone = document.getElementById('phone').value;
     const pass = document.getElementById('password').value;
     const card = document.querySelector('.glass-card');
 
@@ -45,7 +51,7 @@ export function renderLogin(root) {
       btn.disabled = true;
       btn.innerHTML = 'Autenticazione...';
       
-      await API.login(user, pass);
+      await API.login(email, phone, pass);
       
       showToast('Accesso autorizzato', 'success');
       window.location.hash = '#/dashboard';

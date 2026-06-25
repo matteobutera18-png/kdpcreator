@@ -33,10 +33,17 @@ export const API = {
     }
   },
 
-  async login(username, password) {
+  async login(email, phone, password) {
     return this.request('/auth/login', {
       method: 'POST',
-      body: JSON.stringify({ username, password })
+      body: JSON.stringify({ email, phone, password })
+    });
+  },
+
+  async updateSettings(email, phone) {
+    return this.request('/auth/settings', {
+      method: 'POST',
+      body: JSON.stringify({ email, phone })
     });
   },
 
@@ -57,15 +64,15 @@ export const API = {
     return this.request('/books');
   },
 
-  async generateBook(categoria, subNiche = null) {
+  async generateBook(categoria, subNiche = null, difficulty = null) {
     return this.request('/agents/generate', {
       method: 'POST',
-      body: JSON.stringify({ categoria, subNiche })
+      body: JSON.stringify({ categoria, subNiche, difficulty })
     });
   },
 
   // ── Ascolto eventi real-time SSE ──────────────────────────
-  listenToJob(jobId, onComplete) {
+  listenToJob(jobId, onComplete, onProgress) {
     const eventSource = new EventSource(`/api/agents/stream/${jobId}`);
     
     eventSource.onmessage = (event) => {
@@ -86,6 +93,7 @@ export const API = {
             
           case 'agent_progress':
             updateAgentStep(data.agent, 'active', data.message, data.percent);
+            if (onProgress) onProgress(data);
             break;
             
           case 'agent_done':

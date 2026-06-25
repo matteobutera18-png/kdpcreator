@@ -37,6 +37,13 @@ function loadUsers() {
 }
 
 /**
+ * Salva gli utenti nel file JSON.
+ */
+function saveUsers(users) {
+  fs.writeFileSync(config.PATHS.users, JSON.stringify(users, null, 2), 'utf-8');
+}
+
+/**
  * Salva i dati di un libro generato.
  * @param {string} slug - Identificatore del libro
  * @param {object} data - Oggetto con metadata, libro_6x9, prompt_copertina
@@ -141,6 +148,8 @@ function getBookFilePath(slug, fileType) {
     'libro':   'libro_6x9.txt',
     'metadati': 'metadata.json',
     'prompt':  'prompt_copertina.txt',
+    'pdf':     `${slug}.pdf`,
+    'cover':   `Cover_8.5x11.pdf`,
   };
   const filename = validFiles[fileType];
   if (!filename) return null;
@@ -152,6 +161,7 @@ function getBookFilePath(slug, fileType) {
 module.exports = {
   initDirectories,
   loadUsers,
+  saveUsers,
   saveBook,
   listBooks,
   getBook,
