@@ -2,7 +2,7 @@
 //  sw.js — Service Worker per PWA (Offline Support)
 // ================================================================
 
-const CACHE_NAME = 'kdp-factory-v2';
+const CACHE_NAME = 'kdp-factory-v3';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
@@ -12,6 +12,7 @@ const ASSETS_TO_CACHE = [
   '/js/components/toast.js',
   '/js/components/agentStatus.js',
   '/js/views/login.view.js',
+  '/js/views/register.view.js',
   '/js/views/dashboard.view.js',
   '/js/views/archive.view.js',
   '/js/views/settings.view.js',

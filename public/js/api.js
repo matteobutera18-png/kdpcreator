@@ -40,6 +40,13 @@ export const API = {
     });
   },
 
+  async register(email, phone, password) {
+    return this.request('/auth/register', {
+      method: 'POST',
+      body: JSON.stringify({ email, phone, password })
+    });
+  },
+
   async updateSettings(email, phone) {
     return this.request('/auth/settings', {
       method: 'POST',

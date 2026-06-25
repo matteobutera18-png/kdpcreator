@@ -28,13 +28,17 @@ export function renderLogin(root) {
           <label class="input-label">Password Segreta</label>
           <input type="password" id="password" class="input-field" required autocomplete="current-password">
         </div>
-        
-        <button type="submit" class="btn-primary" style="margin-top: 30px;">
-          Accedi al Sistema
-        </button>
-      </form>
-    </div>
-  `;
+                <button type="submit" class="btn-primary" style="margin-top: 32px;">
+            <span style="font-size: 1.2rem;">🔐</span> ACCEDI AL SISTEMA
+          </button>
+        </form>
+
+        <div style="margin-top: 24px; text-align: center; font-size: 0.9rem;">
+          <span style="color: var(--text-secondary);">Non hai un account?</span>
+          <a href="#/register" style="color: var(--accent-secondary); text-decoration: none; font-weight: bold; margin-left: 8px;">Registrati gratis</a>
+        </div>
+      </div>
+    </div>`;
 
   // Focus sul primo campo
   setTimeout(() => document.getElementById('email')?.focus(), 100);

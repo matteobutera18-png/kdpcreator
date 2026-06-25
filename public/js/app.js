@@ -4,6 +4,7 @@
 
 import { API } from './api.js';
 import { renderLogin } from './views/login.view.js';
+import { renderRegister } from './views/register.view.js';
 import { renderDashboard } from './views/dashboard.view.js';
 import { renderArchive } from './views/archive.view.js';
 import { renderSettings } from './views/settings.view.js';
@@ -22,13 +23,13 @@ async function router() {
     const isAuthenticated = await API.checkSession();
     
     // Se non auth e cerca di andare in area privata → forza login
-    if (!isAuthenticated && hash !== '#/login') {
+    if (!isAuthenticated && hash !== '#/login' && hash !== '#/register') {
       window.location.hash = '#/login';
       return;
     }
     
-    // Se auth e cerca di andare in login → forza dashboard
-    if (isAuthenticated && hash === '#/login') {
+    // Se auth e cerca di andare in login/register → forza dashboard
+    if (isAuthenticated && (hash === '#/login' || hash === '#/register')) {
       window.location.hash = '#/dashboard';
       return;
     }
@@ -37,6 +38,9 @@ async function router() {
     switch (hash) {
       case '#/login':
         renderLogin(root);
+        break;
+      case '#/register':
+        renderRegister(root);
         break;
       case '#/dashboard':
         renderDashboard(root);
