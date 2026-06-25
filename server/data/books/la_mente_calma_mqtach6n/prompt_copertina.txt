@@ -1,0 +1,121 @@
+╔══════════════════════════════════════════════════════════════╗
+║   🎨 AGENTE CREATIVO — PROMPT GRAFICI KDP                    ║
+║   Libro: "La Mente Calma"
+║   Generato: 25/06/2026, 11:14:15
+╚══════════════════════════════════════════════════════════════╝
+
+
+═════════════════════════════════════════════════════════════════
+
+
+## SEZIONE 1: PROMPT COPERTINA FRONTALE
+
+
+═════════════════════════════════════════════════════════════════
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  PROMPT COPERTINA FRONTALE — "La Mente Calma"
+  Ottimizzato per: Midjourney v6 | DALL-E 3
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📌 MIDJOURNEY v6 — Copia e incolla esattamente questo prompt:
+────────────────────────────────────────────────────────────────
+person meditating above clouds, ethereal purple and blue light, lotus position, serene atmosphere, professional Amazon KDP book cover for "La Mente Calma", symmetrical composition with vanishing point perspective, professional studio key light with subtle fill, dominant colors: #1A1A2E background with #7C3AED accent lights, ultra-detailed 8K rendering, editorial design aesthetic, premium luxury feel, typography space reserved at top 30% for title text and bottom 10% for author name, NO text in image, hyperrealistic, award-winning book cover design, trending on Behance, shot on Hasselblad H6D, f/1.4 aperture, bokeh background, professional photo retouching --ar 6:9 --v 6 --style raw --q 2 --s 750
+────────────────────────────────────────────────────────────────
+
+📌 DALL-E 3 (ChatGPT) — Usa questo prompt:
+────────────────────────────────────────────────────────────────
+Create a professional, premium book cover design for an Amazon KDP book titled "La Mente Calma: Tecniche di Mindfulness Scientificamente Provate per Sconfiggere Ansia, Stress e Pensieri Negativi in 21 Giorni". The visual style: person meditating above clouds, ethereal purple and blue light, lotus position, serene atmosphere. Color palette: deep #1A1A2E background with #7C3AED accent lighting. Lighting: professional studio key light with subtle fill. Composition: symmetrical composition with vanishing point perspective. The design should feel editorial, modern, and high-end — comparable to Big 5 publisher covers. Leave the top third of the image empty for title text overlay, and bottom portion for author name. NO text should appear in the generated image. Aspect ratio: 6:9 portrait (suitable for KDP 6x9 inch print). Style: ultra-realistic, hyperdetailed, professional photography quality.
+────────────────────────────────────────────────────────────────
+
+📐 SPECIFICHE TECNICHE COPERTINA KDP:
+  • Formato: 6" × 9" (15.24 × 22.86 cm)
+  • Risoluzione minima: 300 DPI per stampa
+  • Formato file: JPG o PNG ad alta qualità
+  • Spazio sicuro: 0.25" (6mm) dai bordi
+  • Risoluzione digitale (eBook): 2560 × 1600 px (JPG ≥ 40 MB)
+  • Colori: RGB per digitale, CMYK per stampa
+
+💡 SUGGERIMENTI DI OTTIMIZZAZIONE:
+  • Il titolo "La Mente Calma" va posizionato nel terzo superiore
+  • Font consigliato: Bold sans-serif (es. Montserrat Black, Bebas Neue)
+  • Il sottotitolo va in dimensione 40-50% del titolo
+  • Usa il colore #7C3AED per il titolo per massimo contrasto
+  • Aggiungi la banda del colore categoria (es. viola per business, verde per salute)
+
+
+═════════════════════════════════════════════════════════════════
+
+
+## SEZIONE 2: PROMPT ILLUSTRAZIONI INTERNE
+
+
+═════════════════════════════════════════════════════════════════
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ILLUSTRAZIONE INTERNA 1/3 — Capitolo 1 — Immagine di Apertura (Hook Visivo)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📌 Scopo: Creare impatto emotivo e introdurre il tema principale
+
+  🎨 PROMPT MIDJOURNEY:
+  Minimalist black and white editorial illustration representing the concept of "mindfulness italiano", stark contrast, geometric shapes, thought-provoking visual metaphor, suitable for book interior chapter opener, ink illustration style, 16:9 ratio --ar 16:9 --v 6 --style raw --s 500
+
+  💡 Note di stampa:
+  • Convertire in scala di grigi se il libro è B&W
+  • Risoluzione: 300 DPI per stampa
+  • Formato: PNG con sfondo bianco per massima compatibilità
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ILLUSTRAZIONE INTERNA 2/3 — Capitolo Centrale — Infografica / Schema Visivo
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📌 Scopo: Illustrare il metodo o il sistema presentato nel libro
+
+  🎨 PROMPT MIDJOURNEY:
+  Clean vector-style infographic illustration showing "meditazione ansia" process with 4 steps, flat design, icons, minimal color palette of 2-3 colors (#1A1A2E and #7C3AED), suitable for print in grayscale, professional editorial illustration, white background --ar 4:3 --v 6 --style raw --s 400
+
+  💡 Note di stampa:
+  • Convertire in scala di grigi se il libro è B&W
+  • Risoluzione: 300 DPI per stampa
+  • Formato: PNG con sfondo bianco per massima compatibilità
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ILLUSTRAZIONE INTERNA 3/3 — Capitolo Finale / Appendice — Elemento Motivazionale
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📌 Scopo: Chiusura emotiva e call to action visiva
+
+  🎨 PROMPT MIDJOURNEY:
+  Inspirational minimal illustration of a person achieving their goal related to "ridurre stress", silhouette style, uplifting mood, warm gradient background transitioning from dark to light, symbolic of transformation and success, suitable for book interior, watercolor ink fusion style --ar 3:2 --v 6 --style raw --s 600
+
+  💡 Note di stampa:
+  • Convertire in scala di grigi se il libro è B&W
+  • Risoluzione: 300 DPI per stampa
+  • Formato: PNG con sfondo bianco per massima compatibilità
+
+
+═════════════════════════════════════════════════════════════════
+
+
+## NOTE FINALI
+    
+Per risultati ottimali con Midjourney:
+1. Accedi a midjourney.com o Discord
+2. Usa /imagine e incolla il prompt
+3. Genera 4 varianti (U1-U4 per upscale)
+4. Seleziona la migliore e usa V per variazioni
+5. Scarica in alta risoluzione (PNG)
+
+Per DALL-E 3 (ChatGPT Plus):
+1. Apri ChatGPT con DALL-E attivo
+2. Incolla il prompt DALL-E sopra
+3. Genera e scarica l'immagine
+4. Apri in Canva o Photoshop per aggiungere il testo del titolo
+
+📐 Strumenti consigliati per composizione finale:
+• Canva Pro → template KDP book cover
+• Adobe InDesign → layout professionale
+• BookBolt.io → strumento specifico KDP
+• GIMP (gratuito) → editing immagini
+
+🎯 Obiettivo: copertina che converta al 3%+ di CTR su Amazon

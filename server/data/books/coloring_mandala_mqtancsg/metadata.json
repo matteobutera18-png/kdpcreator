@@ -1,0 +1,24 @@
+{
+  "slug": "coloring_mandala_mqtancsg",
+  "titolo": "Coloring Book Mandala",
+  "sottotitolo": "Disegni Rilassanti per Adulti e Bambini",
+  "nicchia": "Mandala",
+  "categoria": "Coloring Books",
+  "isColoringBook": true,
+  "pdfPath": "C:\\Users\\39328\\OneDrive\\Desktop\\kdp\\webapp\\server\\data\\books\\coloring_mandala_mqtancsg\\coloring_mandala_mqtancsg.pdf",
+  "keywords": [
+    "coloring book",
+    "Mandala",
+    "disegni da colorare",
+    "rilassamento"
+  ],
+  "descrizione": "Un bellissimo libro da colorare a tema Mandala. Ogni disegno è stampato su una singola facciata per evitare che il colore macchi il foglio successivo.",
+  "categorie_kdp": [
+    "Crafts, Hobbies & Home > Coloring Books for Grown-Ups"
+  ],
+  "pagineStimate": 22,
+  "parole": 0,
+  "pagine_benchmark": 60,
+  "pagine_extra": 0,
+  "createdAt": "2026-06-25T09:29:27.381Z"
+}

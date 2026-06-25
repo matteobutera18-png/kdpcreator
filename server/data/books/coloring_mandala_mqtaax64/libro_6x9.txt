@@ -1,0 +1,173 @@
+
+╔══════════════════════════════════════════════════════════════╗
+║   🎨 AGENTE COLORING BOOK — SPECIFICHE E PROMPT              ║
+║   Nicchia: Mandala
+║   Pagine da Disegnare: 30 (Totale Pagine Libro: 62)
+╚══════════════════════════════════════════════════════════════╝
+
+📌 SPECIFICHE PDF ESPORTAZIONE KDP (8.5" x 11"):
+• Dimensioni: 8.5 x 11 pollici (21.59 x 27.94 cm)
+• Margini di sicurezza: 0.375" (necessari se l'immagine va al vivo/bleed)
+• Risoluzione richiesta: Minimo 300 DPI
+• IMPORTANTE: La struttura è impostata con pagine bianche alternate per evitare l'effetto "Bleed-through" dei pennarelli!
+
+----------------------------------------------------------------
+📘 LAYOUT DEL LIBRO (Pagina per Pagina)
+----------------------------------------------------------------
+Pagina Intro   -> Frontespizio e Copyright
+Pagina Intro   -> Questa pagina è bianca intenzionalmente (retro)
+Pagina 1 [DISEGNO] -> Qui va inserita l'Immagine KDP
+Pagina 2 [BLANK]   -> Pagina vuota anti-macchia
+Pagina 3 [DISEGNO] -> Qui va inserita l'Immagine KDP
+Pagina 4 [BLANK]   -> Pagina vuota anti-macchia
+Pagina 5 [DISEGNO] -> Qui va inserita l'Immagine KDP
+Pagina 6 [BLANK]   -> Pagina vuota anti-macchia
+Pagina 7 [DISEGNO] -> Qui va inserita l'Immagine KDP
+Pagina 8 [BLANK]   -> Pagina vuota anti-macchia
+Pagina 9 [DISEGNO] -> Qui va inserita l'Immagine KDP
+Pagina 10 [BLANK]   -> Pagina vuota anti-macchia
+Pagina 11 [DISEGNO] -> Qui va inserita l'Immagine KDP
+Pagina 12 [BLANK]   -> Pagina vuota anti-macchia
+Pagina 13 [DISEGNO] -> Qui va inserita l'Immagine KDP
+Pagina 14 [BLANK]   -> Pagina vuota anti-macchia
+Pagina 15 [DISEGNO] -> Qui va inserita l'Immagine KDP
+Pagina 16 [BLANK]   -> Pagina vuota anti-macchia
+Pagina 17 [DISEGNO] -> Qui va inserita l'Immagine KDP
+Pagina 18 [BLANK]   -> Pagina vuota anti-macchia
+Pagina 19 [DISEGNO] -> Qui va inserita l'Immagine KDP
+Pagina 20 [BLANK]   -> Pagina vuota anti-macchia
+Pagina 21 [DISEGNO] -> Qui va inserita l'Immagine KDP
+Pagina 22 [BLANK]   -> Pagina vuota anti-macchia
+Pagina 23 [DISEGNO] -> Qui va inserita l'Immagine KDP
+Pagina 24 [BLANK]   -> Pagina vuota anti-macchia
+Pagina 25 [DISEGNO] -> Qui va inserita l'Immagine KDP
+Pagina 26 [BLANK]   -> Pagina vuota anti-macchia
+Pagina 27 [DISEGNO] -> Qui va inserita l'Immagine KDP
+Pagina 28 [BLANK]   -> Pagina vuota anti-macchia
+Pagina 29 [DISEGNO] -> Qui va inserita l'Immagine KDP
+Pagina 30 [BLANK]   -> Pagina vuota anti-macchia
+Pagina 31 [DISEGNO] -> Qui va inserita l'Immagine KDP
+Pagina 32 [BLANK]   -> Pagina vuota anti-macchia
+Pagina 33 [DISEGNO] -> Qui va inserita l'Immagine KDP
+Pagina 34 [BLANK]   -> Pagina vuota anti-macchia
+Pagina 35 [DISEGNO] -> Qui va inserita l'Immagine KDP
+Pagina 36 [BLANK]   -> Pagina vuota anti-macchia
+Pagina 37 [DISEGNO] -> Qui va inserita l'Immagine KDP
+Pagina 38 [BLANK]   -> Pagina vuota anti-macchia
+Pagina 39 [DISEGNO] -> Qui va inserita l'Immagine KDP
+Pagina 40 [BLANK]   -> Pagina vuota anti-macchia
+Pagina 41 [DISEGNO] -> Qui va inserita l'Immagine KDP
+Pagina 42 [BLANK]   -> Pagina vuota anti-macchia
+Pagina 43 [DISEGNO] -> Qui va inserita l'Immagine KDP
+Pagina 44 [BLANK]   -> Pagina vuota anti-macchia
+Pagina 45 [DISEGNO] -> Qui va inserita l'Immagine KDP
+Pagina 46 [BLANK]   -> Pagina vuota anti-macchia
+Pagina 47 [DISEGNO] -> Qui va inserita l'Immagine KDP
+Pagina 48 [BLANK]   -> Pagina vuota anti-macchia
+Pagina 49 [DISEGNO] -> Qui va inserita l'Immagine KDP
+Pagina 50 [BLANK]   -> Pagina vuota anti-macchia
+Pagina 51 [DISEGNO] -> Qui va inserita l'Immagine KDP
+Pagina 52 [BLANK]   -> Pagina vuota anti-macchia
+Pagina 53 [DISEGNO] -> Qui va inserita l'Immagine KDP
+Pagina 54 [BLANK]   -> Pagina vuota anti-macchia
+Pagina 55 [DISEGNO] -> Qui va inserita l'Immagine KDP
+Pagina 56 [BLANK]   -> Pagina vuota anti-macchia
+Pagina 57 [DISEGNO] -> Qui va inserita l'Immagine KDP
+Pagina 58 [BLANK]   -> Pagina vuota anti-macchia
+Pagina 59 [DISEGNO] -> Qui va inserita l'Immagine KDP
+Pagina 60 [BLANK]   -> Pagina vuota anti-macchia
+
+----------------------------------------------------------------
+🖌️ PROMPT PRONTI PER MIDJOURNEY O LEONARDO.AI
+----------------------------------------------------------------
+(Copia e incolla questi prompt nel generatore AI)
+
+[Immagine 1]
+intricate circular mandala, geometric shapes, symmetrical variation 1, black and white line art, clean precise lines, coloring book page, no shading, pure white background, vector style, flat design, uncolored --ar 8:10 --v 6.0
+
+[Immagine 2]
+intricate circular mandala, geometric shapes, symmetrical variation 2, black and white line art, clean precise lines, coloring book page, no shading, pure white background, vector style, flat design, uncolored --ar 8:10 --v 6.0
+
+[Immagine 3]
+animal silhouette filled with mandala patterns variation 3, black and white line art, clean precise lines, coloring book page, no shading, pure white background, vector style, flat design, uncolored --ar 8:10 --v 6.0
+
+[Immagine 4]
+animal silhouette filled with mandala patterns variation 4, black and white line art, clean precise lines, coloring book page, no shading, pure white background, vector style, flat design, uncolored --ar 8:10 --v 6.0
+
+[Immagine 5]
+sun and moon celestial mandala, intricate stars variation 5, black and white line art, clean precise lines, coloring book page, no shading, pure white background, vector style, flat design, uncolored --ar 8:10 --v 6.0
+
+[Immagine 6]
+floral mandala, lotus petals, spiritual, highly detailed variation 6, black and white line art, clean precise lines, coloring book page, no shading, pure white background, vector style, flat design, uncolored --ar 8:10 --v 6.0
+
+[Immagine 7]
+abstract kaleidoscopic mandala, repeating geometric forms variation 7, black and white line art, clean precise lines, coloring book page, no shading, pure white background, vector style, flat design, uncolored --ar 8:10 --v 6.0
+
+[Immagine 8]
+intricate circular mandala, geometric shapes, symmetrical variation 8, black and white line art, clean precise lines, coloring book page, no shading, pure white background, vector style, flat design, uncolored --ar 8:10 --v 6.0
+
+[Immagine 9]
+sun and moon celestial mandala, intricate stars variation 9, black and white line art, clean precise lines, coloring book page, no shading, pure white background, vector style, flat design, uncolored --ar 8:10 --v 6.0
+
+[Immagine 10]
+animal silhouette filled with mandala patterns variation 10, black and white line art, clean precise lines, coloring book page, no shading, pure white background, vector style, flat design, uncolored --ar 8:10 --v 6.0
+
+[Immagine 11]
+floral mandala, lotus petals, spiritual, highly detailed variation 11, black and white line art, clean precise lines, coloring book page, no shading, pure white background, vector style, flat design, uncolored --ar 8:10 --v 6.0
+
+[Immagine 12]
+sun and moon celestial mandala, intricate stars variation 12, black and white line art, clean precise lines, coloring book page, no shading, pure white background, vector style, flat design, uncolored --ar 8:10 --v 6.0
+
+[Immagine 13]
+sun and moon celestial mandala, intricate stars variation 13, black and white line art, clean precise lines, coloring book page, no shading, pure white background, vector style, flat design, uncolored --ar 8:10 --v 6.0
+
+[Immagine 14]
+intricate circular mandala, geometric shapes, symmetrical variation 14, black and white line art, clean precise lines, coloring book page, no shading, pure white background, vector style, flat design, uncolored --ar 8:10 --v 6.0
+
+[Immagine 15]
+sun and moon celestial mandala, intricate stars variation 15, black and white line art, clean precise lines, coloring book page, no shading, pure white background, vector style, flat design, uncolored --ar 8:10 --v 6.0
+
+[Immagine 16]
+abstract kaleidoscopic mandala, repeating geometric forms variation 16, black and white line art, clean precise lines, coloring book page, no shading, pure white background, vector style, flat design, uncolored --ar 8:10 --v 6.0
+
+[Immagine 17]
+sun and moon celestial mandala, intricate stars variation 17, black and white line art, clean precise lines, coloring book page, no shading, pure white background, vector style, flat design, uncolored --ar 8:10 --v 6.0
+
+[Immagine 18]
+intricate circular mandala, geometric shapes, symmetrical variation 18, black and white line art, clean precise lines, coloring book page, no shading, pure white background, vector style, flat design, uncolored --ar 8:10 --v 6.0
+
+[Immagine 19]
+intricate circular mandala, geometric shapes, symmetrical variation 19, black and white line art, clean precise lines, coloring book page, no shading, pure white background, vector style, flat design, uncolored --ar 8:10 --v 6.0
+
+[Immagine 20]
+intricate circular mandala, geometric shapes, symmetrical variation 20, black and white line art, clean precise lines, coloring book page, no shading, pure white background, vector style, flat design, uncolored --ar 8:10 --v 6.0
+
+[Immagine 21]
+abstract kaleidoscopic mandala, repeating geometric forms variation 21, black and white line art, clean precise lines, coloring book page, no shading, pure white background, vector style, flat design, uncolored --ar 8:10 --v 6.0
+
+[Immagine 22]
+intricate circular mandala, geometric shapes, symmetrical variation 22, black and white line art, clean precise lines, coloring book page, no shading, pure white background, vector style, flat design, uncolored --ar 8:10 --v 6.0
+
+[Immagine 23]
+abstract kaleidoscopic mandala, repeating geometric forms variation 23, black and white line art, clean precise lines, coloring book page, no shading, pure white background, vector style, flat design, uncolored --ar 8:10 --v 6.0
+
+[Immagine 24]
+sun and moon celestial mandala, intricate stars variation 24, black and white line art, clean precise lines, coloring book page, no shading, pure white background, vector style, flat design, uncolored --ar 8:10 --v 6.0
+
+[Immagine 25]
+animal silhouette filled with mandala patterns variation 25, black and white line art, clean precise lines, coloring book page, no shading, pure white background, vector style, flat design, uncolored --ar 8:10 --v 6.0
+
+[Immagine 26]
+abstract kaleidoscopic mandala, repeating geometric forms variation 26, black and white line art, clean precise lines, coloring book page, no shading, pure white background, vector style, flat design, uncolored --ar 8:10 --v 6.0
+
+[Immagine 27]
+intricate circular mandala, geometric shapes, symmetrical variation 27, black and white line art, clean precise lines, coloring book page, no shading, pure white background, vector style, flat design, uncolored --ar 8:10 --v 6.0
+
+[Immagine 28]
+sun and moon celestial mandala, intricate stars variation 28, black and white line art, clean precise lines, coloring book page, no shading, pure white background, vector style, flat design, uncolored --ar 8:10 --v 6.0
+
+[Immagine 29]
+floral mandala, lotus petals, spiritual, highly detailed variation 29, black and white line art, clean precise lines, coloring book page, no shading, pure white background, vector style, flat design, uncolored --ar 8:10 --v 6.0
+
+[Immagine 30]
+animal silhouette filled with mandala patterns variation 30, black and white line art, clean precise lines, coloring book page, no shading, pure white background, vector style, flat design, uncolored --ar 8:10 --v 6.0
