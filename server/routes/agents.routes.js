@@ -14,7 +14,7 @@ const activeJobs = new Map();
 
 // ── POST /api/agents/generate — Avvia pipeline ───────────────
 router.post('/generate', requireAuth, async (req, res) => {
-  const { categoria, subNiche, difficulty, bookType, artStyle } = req.body;
+  const { categoria, activityMix } = req.body;
 
   if (!categoria) {
     return res.status(400).json({ error: 'Categoria richiesta.' });
@@ -23,7 +23,7 @@ router.post('/generate', requireAuth, async (req, res) => {
   const jobId = uuidv4();
 
   // Registra il job come "in attesa"
-  activeJobs.set(jobId, { status: 'pending', categoria, subNiche, difficulty, bookType, artStyle, createdAt: new Date().toISOString() });
+  activeJobs.set(jobId, { status: 'pending', categoria, activityMix, createdAt: new Date().toISOString() });
 
   // Avvia la pipeline in background (non-blocking)
   orchestrator.runPipeline(jobId, categoria, activeJobs, difficulty).catch(err => {

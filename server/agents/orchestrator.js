@@ -36,7 +36,8 @@ async function runPipeline(jobId, categoria, activeJobs) {
   job.status = 'running';
 
   const isColoring = categoria === 'Coloring Books';
-  const isActivity = isColoring && (job.bookType === 'Labirinti' || job.bookType === 'Diario');
+  // Se è Coloring Books, adesso è in realtà la modalita "Activity Mix"
+  const isActivityMix = isColoring;
 
   try {
     // ── FASE 0: Inizializzazione ──────────────────────────────
@@ -136,30 +137,17 @@ async function runPipeline(jobId, categoria, activeJobs) {
     // ────────────────────────────────────────────────────────
     let contentResult;
 
-    if (isColoring) {
-        if (isActivity) {
-            emit(activeJobs, jobId, 'agent_start', {
-              agent:   'writer',
-              message: `🧩 Agente Activity: Generazione Motore Vettoriale per ${job.bookType}...`,
-              step:    2,
-            });
-            await sleep(600);
-            
-            contentResult = await activityAgent.run(scoutResult, (msg, percent, data = {}) => {
-                emit(activeJobs, jobId, 'agent_progress', { agent: 'writer', message: msg, percent, ...data });
-            }, scoutResult.slug, job.difficulty, job.bookType);
-        } else {
-            emit(activeJobs, jobId, 'agent_start', {
-              agent:   'writer',
-              message: `🖍️ Agente Coloring: Generazione Prompt e Blueprint PDF Bleed 8.625x11.25"...`,
-              step:    2,
-            });
-            await sleep(600);
-            
-            contentResult = await coloringAgent.run(scoutResult, (msg, percent, data = {}) => {
-                emit(activeJobs, jobId, 'agent_progress', { agent: 'writer', message: msg, percent, ...data });
-            }, scoutResult.slug, job.difficulty, job.artStyle);
-        }
+    if (isActivityMix) {
+        emit(activeJobs, jobId, 'agent_start', {
+          agent:   'writer',
+          message: `🧩 Agente Activity Mix: Generazione procedurale Puzzle e Soluzioni...`,
+          step:    2,
+        });
+        await sleep(600);
+        
+        contentResult = await activityAgent.run(scoutResult, (msg, percent, data = {}) => {
+            emit(activeJobs, jobId, 'agent_progress', { agent: 'writer', message: msg, percent, ...data });
+        }, scoutResult.slug, job.activityMix);
     } else {
         emit(activeJobs, jobId, 'agent_start', {
           agent:   'writer',
@@ -175,7 +163,7 @@ async function runPipeline(jobId, categoria, activeJobs) {
 
     emit(activeJobs, jobId, 'agent_done', {
       agent:   'writer',
-      message: isColoring ? `🖍️ Agente Impaginazione completato — PDF Generato` : `✍️ Scrittore completato — ${contentResult.pagineStimate} pagine generate`,
+      message: isActivityMix ? `🖍️ Agente Impaginazione completato — Activity Book Generato` : `✍️ Scrittore completato — ${contentResult.pagineStimate} pagine generate`,
       data:    { pagine: contentResult.pagineStimate, parole: contentResult.parole },
     });
     await sleep(500);
@@ -198,12 +186,12 @@ async function runPipeline(jobId, categoria, activeJobs) {
     await sleep(1000);
 
     let creativeResult;
-    if (isColoring) {
+    if (isActivityMix) {
        // La copertina per i coloring books e activity books ha uno stile diverso
        creativeResult = {
            testo: `
 📌 PROMPT COPERTINA KDP
-Stile: Professional book cover, intricate ${scoutResult.nicchia} theme centered on background, vibrant and engaging, typography space at top. --ar 8.5:11 --v 6.0
+Stile: Professional book cover, intricate Puzzle and Activity theme centered on background, vibrant and engaging, typography space at top. --ar 8.5:11 --v 6.0
 `
        };
     } else {

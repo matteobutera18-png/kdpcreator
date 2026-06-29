@@ -80,10 +80,10 @@ export const API = {
     });
   },
 
-  async generateBook(categoria, subNiche, difficulty, bookType, artStyle) {
+  async generateBook(categoria, activityMix = null) {
     return this.request('/agents/generate', {
       method: 'POST',
-      body: JSON.stringify({ categoria, subNiche, difficulty, bookType, artStyle })
+      body: JSON.stringify({ categoria, activityMix })
     });
   },
 

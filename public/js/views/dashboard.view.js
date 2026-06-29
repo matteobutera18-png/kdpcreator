@@ -56,40 +56,56 @@ export function renderDashboard(root) {
           <div class="pill" data-cat="Coloring Books" style="border-color: var(--accent-blue); color: var(--accent-blue);">🎨 Libri da Colorare / Attività</div>
         </div>
 
-        <!-- Sotto-Nicchia Coloring/Activity Books -->
-        <div id="coloring-options" style="display: none; margin-bottom: 20px; animation: fadeIn 0.3s ease; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1);">
+        <!-- Sotto-Nicchia Activity / Puzzle Books (Slot Unica) -->
+        <div id="activity-mix-options" style="display: none; margin-bottom: 20px; animation: fadeIn 0.3s ease; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
+          <h3 style="color: var(--accent-blue); margin-bottom: 12px; font-size: 1.05rem;">🧩 Slot Unica Configurazione Puzzle</h3>
           
-          <label class="input-label" style="color: var(--accent-secondary);">Tipo di Interno</label>
-          <select id="coloring-type" class="input-field" style="background: rgba(0, 255, 136, 0.05); border-color: rgba(0, 255, 136, 0.3); margin-bottom: 12px;">
-            <option value="Coloring Book">🎨 Libro da Colorare (Disegni)</option>
-            <option value="Labirinti">🧩 Labirinti / Activity Book</option>
-            <option value="Diario">📓 Diario con Righe (Low Content)</option>
-          </select>
-
-          <label class="input-label" style="color: var(--accent-blue);">Soggetto / Nicchia (Es. Mandala, Animali, Halloween)</label>
-          <input type="text" id="coloring-niche-input" class="input-field" placeholder="Es. Dinosauri, Mandala Floreali..." value="Mandala" style="background: rgba(0, 210, 255, 0.05); border-color: rgba(0, 210, 255, 0.3); margin-bottom: 12px;">
-          
-          <div style="display: flex; gap: 15px;">
-            <div style="flex: 1;">
-              <label class="input-label" style="color: var(--accent-blue);">Stile Grafico</label>
-              <select id="coloring-art-style" class="input-field" style="background: rgba(0, 210, 255, 0.05); border-color: rgba(0, 210, 255, 0.3);">
-                <option value="Line Art Pulita">Line Art Pulita (Classico)</option>
-                <option value="Kawaii Semplice">Kawaii Semplice (Giapponese Carino)</option>
-                <option value="Mandala Intricato">Mandala Intricato (Complesso)</option>
-                <option value="Schizzo a Matita">Schizzo a Matita (Artistico)</option>
-              </select>
+          <!-- SUDOKU -->
+          <div style="display: flex; gap: 15px; margin-bottom: 15px; align-items: center; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px;">
+            <div style="flex: 0 0 120px;">
+              <label class="input-label" style="margin-bottom: 4px;">Quantità Sudoku</label>
+              <input type="number" id="mix-sudoku-qty" class="input-field" value="0" min="0" max="100" style="padding: 8px;">
             </div>
             <div style="flex: 1;">
-              <label class="input-label" style="color: var(--accent-blue);">Difficoltà / Età</label>
-              <select id="coloring-difficulty" class="input-field" style="background: rgba(0, 210, 255, 0.05); border-color: rgba(0, 210, 255, 0.3);">
-                <option value="Bambini">Bambini (Tratti Spessi)</option>
-                <option value="Adulti">Adulti (Dettagliato)</option>
+              <label class="input-label" style="margin-bottom: 4px;">Difficoltà Sudoku</label>
+              <select id="mix-sudoku-diff" class="input-field" style="padding: 8px;">
+                <option value="Facile">Facile</option>
+                <option value="Medio">Medio</option>
+                <option value="Difficile">Difficile</option>
+                <option value="Diabolico">Diabolico</option>
               </select>
+            </div>
+          </div>
+
+          <!-- LABIRINTI -->
+          <div style="display: flex; gap: 15px; margin-bottom: 15px; align-items: center; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px;">
+            <div style="flex: 0 0 120px;">
+              <label class="input-label" style="margin-bottom: 4px;">Q.tà Labirinti</label>
+              <input type="number" id="mix-maze-qty" class="input-field" value="0" min="0" max="100" style="padding: 8px;">
+            </div>
+            <div style="flex: 1;">
+              <label class="input-label" style="margin-bottom: 4px;">Forma Labirinto</label>
+              <select id="mix-maze-shape" class="input-field" style="padding: 8px;">
+                <option value="Quadrati">Quadrati Classici</option>
+                <option value="Circolari">Circolari</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- CRUCIPUZZLE -->
+          <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px;">
+            <div style="width: 120px;">
+              <label class="input-label" style="margin-bottom: 4px;">Q.tà Crucipuzzle</label>
+              <input type="number" id="mix-wordsearch-qty" class="input-field" value="0" min="0" max="100" style="padding: 8px;">
+            </div>
+            <div style="width: 100%;">
+              <label class="input-label" style="margin-bottom: 4px;">Lista Parole (Separate da virgola)</label>
+              <textarea id="mix-wordsearch-words" class="input-field" rows="3" placeholder="Es. mela, pera, banana, fragola, limone..." style="padding: 8px; resize: vertical;"></textarea>
             </div>
           </div>
           
           <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 12px;">
-            <span style="color: var(--warning);">⚠ NOVITÀ:</span> Marginatura KDP Bleed 8.625"x11.25" attiva con Pagina Sanguinante automatica per i disegni!
+            <span style="color: var(--accent-blue);">ℹ INFO:</span> Il PDF generato includerà tutte le soluzioni in formato griglia alla fine del libro.
           </p>
         </div>
 
@@ -176,11 +192,11 @@ export function renderDashboard(root) {
       e.target.classList.add('active');
       selectedCategory = e.target.dataset.cat;
       
-      const coloringOptions = document.getElementById('coloring-options');
+      const activityMixOptions = document.getElementById('activity-mix-options');
       if (selectedCategory === 'Coloring Books') {
-        coloringOptions.style.display = 'block';
+        activityMixOptions.style.display = 'block';
       } else {
-        coloringOptions.style.display = 'none';
+        activityMixOptions.style.display = 'none';
       }
     });
   });
@@ -193,23 +209,43 @@ export function renderDashboard(root) {
   // Avvio Generazione
   document.getElementById('btn-generate').addEventListener('click', async (e) => {
     const btn = e.target.closest('button');
-    const isColoring = selectedCategory === 'Coloring Books';
-    const subNiche = isColoring ? document.getElementById('coloring-niche-input').value : null;
-    const difficulty = isColoring ? document.getElementById('coloring-difficulty').value : null;
-    const bookType = isColoring ? document.getElementById('coloring-type').value : null;
-    const artStyle = isColoring ? document.getElementById('coloring-art-style').value : null;
+    const isActivityMix = selectedCategory === 'Coloring Books';
+    
+    let activityMix = null;
+    if (isActivityMix) {
+       activityMix = {
+         sudoku: {
+           qty: parseInt(document.getElementById('mix-sudoku-qty').value) || 0,
+           diff: document.getElementById('mix-sudoku-diff').value
+         },
+         maze: {
+           qty: parseInt(document.getElementById('mix-maze-qty').value) || 0,
+           shape: document.getElementById('mix-maze-shape').value
+         },
+         wordsearch: {
+           qty: parseInt(document.getElementById('mix-wordsearch-qty').value) || 0,
+           words: document.getElementById('mix-wordsearch-words').value
+         }
+       };
+       
+       if (activityMix.sudoku.qty === 0 && activityMix.maze.qty === 0 && activityMix.wordsearch.qty === 0) {
+         return showToast('Inserisci almeno una quantità maggiore di zero per i puzzle.', 'error');
+       }
+    }
     
     try {
       btn.disabled = true;
-      btn.innerHTML = '<span style="animation: spin 1s linear infinite;">⏳</span> Inizializzazione...';
+      document.getElementById('agent-status-panel').style.display = 'block';
+      document.getElementById('live-preview').style.display = 'block';
       
-      // Resetta UI agenti
-      resetAgentStatusUI();
+      // Resetta UI e Preview
+      document.getElementById('preview-grid').innerHTML = '';
+      document.querySelectorAll('.agent-step').forEach(el => el.classList.remove('active', 'completed'));
       
-      const livePreview = document.getElementById('live-preview');
-      const previewGrid = document.getElementById('preview-grid');
+      // Chiama API
+      const res = await API.generateBook(selectedCategory, activityMix);
       
-      if (isColoring) {
+      if (isActivityMix) {
         livePreview.style.display = 'block';
         previewGrid.innerHTML = ''; // resetta le immagini
       } else {
