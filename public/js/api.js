@@ -67,14 +67,23 @@ export const API = {
     }
   },
 
+  // ── Libri & Agenti ──────────────────────────────────────────
+
   async getBooks() {
     return this.request('/books');
   },
 
-  async generateBook(categoria, subNiche = null, difficulty = null) {
+  async optimizeSEO(keyword) {
+    return this.request('/books/seo-optimize', {
+      method: 'POST',
+      body: JSON.stringify({ keyword })
+    });
+  },
+
+  async generateBook(categoria, subNiche, difficulty, bookType, artStyle) {
     return this.request('/agents/generate', {
       method: 'POST',
-      body: JSON.stringify({ categoria, subNiche, difficulty })
+      body: JSON.stringify({ categoria, subNiche, difficulty, bookType, artStyle })
     });
   },
 

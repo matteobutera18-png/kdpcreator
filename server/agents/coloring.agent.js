@@ -7,12 +7,27 @@ const fs = require('fs');
 const path = require('path');
 const PDFDocument = require('pdfkit');
 
-function getPromptsByNiche(nicchia, numPagine, difficulty) {
+function getPromptsByNiche(nicchia, numPagine, difficulty, artStyle) {
   const diffStyle = difficulty === 'Bambini' 
     ? "simple, thick bold lines, easy to color, very few details, large shapes" 
-    : "intricate, extremely detailed, highly complex, fine lines, mandala patterns";
+    : "intricate, extremely detailed, highly complex, fine lines";
     
-  const baseStyle = `black and white line art, pure white background, vector style, flat design, uncolored, ${diffStyle}`;
+  // Aggiunta parametri di Stile
+  let styleModifiers = "";
+  let negativePrompts = "&negativePrompt=shading, colors, gray background, gradients, 3d, realistic";
+  
+  if (artStyle === 'Kawaii Semplice') {
+      styleModifiers = "kawaii style, cute, japanese chibi, adorable";
+      negativePrompts += ", scary, complex";
+  } else if (artStyle === 'Mandala Intricato') {
+      styleModifiers = "mandala pattern, kaleidoscopic, circular symmetrical design";
+  } else if (artStyle === 'Schizzo a Matita') {
+      styleModifiers = "pencil sketch style line art, hand drawn texture";
+  } else {
+      styleModifiers = "clean vector art"; // Default
+  }
+
+  const baseStyle = `black and white line art, pure white background, uncolored, ${diffStyle}, ${styleModifiers}`;
   let subjects = [];
 
   const nicheMap = {
@@ -52,7 +67,12 @@ function getPromptsByNiche(nicchia, numPagine, difficulty) {
   
   for(let i=0; i<numPagine; i++) {
     const randomSubject = pool[Math.floor(Math.random() * pool.length)];
-    subjects.push(`${randomSubject} variation ${i+1}, ${baseStyle}`);
+    // Formattiamo il prompt finale includendo il negativePrompt nell'URL 
+    // Lo gestiamo come oggetto per passarlo alla funzione di fetch
+    subjects.push({
+      text: `${randomSubject} variation ${i+1}, ${baseStyle}`,
+      neg: negativePrompts
+    });
   }
 
   return subjects;
@@ -61,9 +81,9 @@ function getPromptsByNiche(nicchia, numPagine, difficulty) {
 // ─────────────────────────────────────────────────────────────
 //  ESECUZIONE AGENTE CON GENERAZIONE PDF REALE E COVER
 // ─────────────────────────────────────────────────────────────
-async function run(scoutResult, updateProgress, slug, difficulty) {
+async function run(scoutResult, updateProgress, slug, difficulty, artStyle) {
   const numPagine = 10; // Demo
-  const prompts = getPromptsByNiche(scoutResult.nicchia, numPagine, difficulty);
+  const prompts = getPromptsByNiche(scoutResult.nicchia, numPagine, difficulty, artStyle);
   
   // Creiamo una directory temporanea per scaricare le immagini
   const tmpDir = path.join(__dirname, '..', 'data', 'tmp_images', slug);
@@ -74,11 +94,12 @@ async function run(scoutResult, updateProgress, slug, difficulty) {
   // Scaricamento immagini via Pollinations AI
   for (let i = 0; i < prompts.length; i++) {
     const seed = Math.floor(Math.random() * 999999999); 
-    const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompts[i])}?width=825&height=1065&nologo=true&seed=${seed}`;
+    const promptData = prompts[i];
+    const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(promptData.text)}?width=862&height=1125&nologo=true&seed=${seed}${promptData.neg}`;
     
     if (updateProgress) {
         // Send image URL for Live Preview
-        updateProgress(`🎨 Generazione Immagine ${i+1}/${prompts.length}... (Potrebbe richiedere alcuni secondi)`, Math.round((i / prompts.length) * 50), { imageUrl: url });
+        updateProgress(`🎨 Generazione Immagine ${i+1}/${prompts.length}... [${artStyle}]`, Math.round((i / prompts.length) * 50), { imageUrl: url });
     }
     
     try {
@@ -96,16 +117,18 @@ async function run(scoutResult, updateProgress, slug, difficulty) {
     }
   }
 
-  if (updateProgress) updateProgress(`📄 Compilazione PDF (8.5x11") in corso...`, 80);
+  if (updateProgress) updateProgress(`📄 Compilazione PDF Bleed (8.625x11.25") in corso...`, 80);
 
-  // Generazione del file PDF reale (8.5x11 inches = 612 x 792 points in pdfkit)
+  // Generazione del file PDF reale Bleed (8.625x11.25 inches)
+  const docWidth = 8.625 * 72;  // 621 pt
+  const docHeight = 11.25 * 72; // 810 pt
+
   const pdfPath = path.join(__dirname, '..', 'data', 'books', slug, `${slug}.pdf`);
-  // Ci assicuriamo che la directory destinazione esista (lo fa il filemanager di solito, ma per sicurezza)
   fs.mkdirSync(path.join(__dirname, '..', 'data', 'books', slug), { recursive: true });
 
   return new Promise((resolve, reject) => {
       const doc = new PDFDocument({
-         size: [612, 792], // 8.5 x 11 pollici
+         size: [docWidth, docHeight],
          margins: { top: 0, bottom: 0, left: 0, right: 0 },
          autoFirstPage: false
       });
@@ -130,10 +153,9 @@ async function run(scoutResult, updateProgress, slug, difficulty) {
           // Disegno
           doc.addPage();
           try {
-             // L'immagine deve fittare 8.5x11 (612x792), aggiungiamo un margine di sicurezza (bleed) 
-             // usando fit: [612, 792] o x:0, y:0, width: 612, height: 792. 
-             // Usiamo margini KDP standard
-             doc.image(imagePaths[i], 36, 36, { width: 540, height: 720 });
+             // Immagine centrata per full bleed
+             // doc.image usa l'intera area 621x810
+             doc.image(imagePaths[i], 0, 0, { width: docWidth, height: docHeight });
           } catch(e) {
              doc.text('Errore caricamento immagine ' + i);
           }
@@ -148,15 +170,13 @@ async function run(scoutResult, updateProgress, slug, difficulty) {
           
           if (updateProgress) updateProgress(`📄 Generazione Copertina (Fronte + Retro) in corso...`, 90);
           
-          // Generazione Cover PDF Wrap
-          // KDP Formula: Dorso = numPagine * 0.0022525 pollici (con carta bianca). 
-          // Pagine totali interne = numPagine * 2 + 2
+          // Generazione Cover PDF Wrap Bleed
           const totalPages = numPagine * 2 + 2;
           const spineInches = Math.max(totalPages * 0.0022525, 0.1); 
-          const spinePoints = spineInches * 72; // Converti pollici in punti (1 pollice = 72 pt)
+          const spinePoints = spineInches * 72; 
           
-          const coverWidth = (8.5 * 72 * 2) + spinePoints;
-          const coverHeight = 11 * 72;
+          const coverWidth = (8.5 * 72 * 2) + spinePoints + (0.25 * 72);
+          const coverHeight = 11.25 * 72;
           
           const coverPdfPath = path.join(__dirname, '..', 'data', 'books', slug, `Cover_8.5x11.pdf`);
           const coverDoc = new PDFDocument({
@@ -182,7 +202,7 @@ async function run(scoutResult, updateProgress, slug, difficulty) {
           coverDoc.restore();
           
           // Testo Fronte (destra)
-          const frontX = 8.5*72 + spinePoints;
+          const frontX = (8.5*72) + spinePoints + (0.125 * 72);
           coverDoc.fill('#FFFFFF').font('Helvetica-Bold').fontSize(36).text(scoutResult.titolo.toUpperCase(), frontX + 50, 100, { width: 8.5*72 - 100, align: 'center' });
           
           // Aggiungiamo l'ultima immagine generata come copertina frontale se esiste
