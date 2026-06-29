@@ -19,29 +19,10 @@ async function router() {
   root.innerHTML = '<div style="display:flex; justify-content:center; align-items:center; height:100vh; font-size:2rem; animation:spin 1s linear infinite;">⏳</div>';
   
   try {
-    // Controllo autenticazione su ogni cambio route
-    const isAuthenticated = await API.checkSession();
+    // Il login è stato eliminato. Si va diretti alle viste.
     
-    // Se non auth e cerca di andare in area privata → forza login
-    if (!isAuthenticated && hash !== '#/login' && hash !== '#/register') {
-      window.location.hash = '#/login';
-      return;
-    }
-    
-    // Se auth e cerca di andare in login/register → forza dashboard
-    if (isAuthenticated && (hash === '#/login' || hash === '#/register')) {
-      window.location.hash = '#/dashboard';
-      return;
-    }
-
     // Rendering Vista
     switch (hash) {
-      case '#/login':
-        renderLogin(root);
-        break;
-      case '#/register':
-        renderRegister(root);
-        break;
       case '#/dashboard':
         renderDashboard(root);
         break;

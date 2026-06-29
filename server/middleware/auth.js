@@ -10,29 +10,7 @@ const config = require('../config');
  * Blocca le richieste non autenticate con 401.
  */
 function requireAuth(req, res, next) {
-  // Leggi token dal cookie httpOnly
-  const token = req.cookies?.[config.COOKIE_NAME]
-             || req.headers['authorization']?.replace('Bearer ', '');
-
-  if (!token) {
-    return res.status(401).json({
-      error:   'Non autenticato',
-      message: 'Accesso negato. Effettua il login.',
-    });
-  }
-
-  try {
-    const decoded = jwt.verify(token, config.JWT_SECRET);
-    req.user      = decoded;
-    next();
-  } catch (err) {
-    // Token scaduto o non valido
-    res.clearCookie(config.COOKIE_NAME);
-    return res.status(401).json({
-      error:   'Sessione scaduta',
-      message: 'La tua sessione è scaduta. Effettua nuovamente il login.',
-    });
-  }
+  next();
 }
 
 /**

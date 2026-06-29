@@ -12,8 +12,6 @@ export function renderDashboard(root) {
       <div class="logo-text">KDP FACTORY</div>
       <div class="nav-buttons">
         <button class="icon-btn" id="btn-archive" title="Archivio Libri">📚</button>
-        <button class="icon-btn" id="btn-settings" title="Impostazioni">⚙️</button>
-        <button class="icon-btn" id="btn-logout" title="Esci">🚪</button>
       </div>
     </div>
 
@@ -190,15 +188,6 @@ export function renderDashboard(root) {
   // Navigazione
   document.getElementById('btn-archive').addEventListener('click', () => {
     window.location.hash = '#/archive';
-  });
-
-  document.getElementById('btn-settings').addEventListener('click', () => {
-    window.location.hash = '#/settings';
-  });
-
-  document.getElementById('btn-logout').addEventListener('click', async () => {
-    await API.logout();
-    window.location.hash = '#/login';
   });
 
   // Avvio Generazione
