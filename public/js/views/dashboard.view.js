@@ -66,14 +66,17 @@ export function renderDashboard(root) {
               <label class="input-label" style="margin-bottom: 4px;">Quantità Sudoku</label>
               <input type="number" id="mix-sudoku-qty" class="input-field" value="0" min="0" max="100" style="padding: 8px;">
             </div>
-            <div style="flex: 1;">
-              <label class="input-label" style="margin-bottom: 4px;">Difficoltà Sudoku</label>
-              <select id="mix-sudoku-diff" class="input-field" style="padding: 8px;">
-                <option value="Facile">Facile</option>
-                <option value="Medio">Medio</option>
-                <option value="Difficile">Difficile</option>
-                <option value="Diabolico">Diabolico</option>
-              </select>
+            <div style="flex: 1; display: flex; gap: 10px; align-items: flex-end;">
+              <div style="flex: 1;">
+                <label class="input-label" style="margin-bottom: 4px;">Difficoltà Sudoku</label>
+                <select id="mix-sudoku-diff" class="input-field" style="padding: 8px;">
+                  <option value="Facile">Facile</option>
+                  <option value="Medio">Medio</option>
+                  <option value="Difficile">Difficile</option>
+                  <option value="Diabolico">Diabolico</option>
+                </select>
+              </div>
+              <button class="btn-secondary btn-preview-puzzle" data-type="sudoku" style="padding: 8px 12px; height: 38px;">👁️</button>
             </div>
           </div>
 
@@ -83,12 +86,15 @@ export function renderDashboard(root) {
               <label class="input-label" style="margin-bottom: 4px;">Q.tà Labirinti</label>
               <input type="number" id="mix-maze-qty" class="input-field" value="0" min="0" max="100" style="padding: 8px;">
             </div>
-            <div style="flex: 1;">
-              <label class="input-label" style="margin-bottom: 4px;">Forma Labirinto</label>
-              <select id="mix-maze-shape" class="input-field" style="padding: 8px;">
-                <option value="Quadrati">Quadrati Classici</option>
-                <option value="Circolari">Circolari</option>
-              </select>
+            <div style="flex: 1; display: flex; gap: 10px; align-items: flex-end;">
+              <div style="flex: 1;">
+                <label class="input-label" style="margin-bottom: 4px;">Forma Labirinto</label>
+                <select id="mix-maze-shape" class="input-field" style="padding: 8px;">
+                  <option value="Quadrati">Quadrati Classici</option>
+                  <option value="Circolari">Circolari</option>
+                </select>
+              </div>
+              <button class="btn-secondary btn-preview-puzzle" data-type="maze" style="padding: 8px 12px; height: 38px;">👁️</button>
             </div>
           </div>
 
@@ -98,15 +104,32 @@ export function renderDashboard(root) {
               <label class="input-label" style="margin-bottom: 4px;">Q.tà Crucipuzzle</label>
               <input type="number" id="mix-wordsearch-qty" class="input-field" value="0" min="0" max="100" style="padding: 8px;">
             </div>
-            <div style="width: 100%;">
-              <label class="input-label" style="margin-bottom: 4px;">Lista Parole (Separate da virgola)</label>
-              <textarea id="mix-wordsearch-words" class="input-field" rows="3" placeholder="Es. mela, pera, banana, fragola, limone..." style="padding: 8px; resize: vertical;"></textarea>
+            <div style="width: 100%; display: flex; gap: 10px; align-items: flex-start;">
+              <div style="flex: 1;">
+                <label class="input-label" style="margin-bottom: 4px;">Lista Parole (Separate da virgola)</label>
+                <textarea id="mix-wordsearch-words" class="input-field" rows="3" placeholder="Es. mela, pera, banana, fragola, limone..." style="padding: 8px; resize: vertical;"></textarea>
+              </div>
+              <button class="btn-secondary btn-preview-puzzle" data-type="wordsearch" style="padding: 8px 12px; height: 38px; margin-top: 25px;">👁️</button>
             </div>
           </div>
           
           <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 12px;">
             <span style="color: var(--accent-blue);">ℹ INFO:</span> Il PDF generato includerà tutte le soluzioni in formato griglia alla fine del libro.
           </p>
+          
+          <!-- CALCOLATORE KDP -->
+          <div style="margin-top: 15px; padding: 12px; background: rgba(0, 255, 136, 0.05); border: 1px dashed rgba(0, 255, 136, 0.3); border-radius: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <span style="font-size: 0.9rem; color: var(--text-secondary);">Stima Pagine Totali:</span>
+                <strong style="color: white; font-size: 1.1rem; margin-left: 8px;" id="calc-pages">0</strong>
+              </div>
+              <div>
+                <span style="font-size: 0.9rem; color: var(--text-secondary);">Costo Stampa KDP:</span>
+                <strong style="color: var(--accent-secondary); font-size: 1.1rem; margin-left: 8px;" id="calc-cost">$0.00</strong>
+              </div>
+            </div>
+          </div>
         </div>
 
         <button class="btn-primary" id="btn-generate">
@@ -128,6 +151,15 @@ export function renderDashboard(root) {
            <!-- Le immagini appariranno qui -->
         </div>
       </div>
+    </div>
+
+    <!-- MODAL ANTEPRIMA PUZZLE -->
+    <div id="puzzle-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); z-index: 9999; justify-content: center; align-items: center; backdrop-filter: blur(5px);">
+       <div style="background: var(--bg-card); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 24px; max-width: 90%; max-height: 90%; overflow: auto; position: relative; display: flex; flex-direction: column; align-items: center;">
+          <button id="close-modal" style="position: absolute; top: 15px; right: 15px; background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer;">✕</button>
+          <h2 id="modal-title" style="margin-bottom: 20px; color: var(--accent-blue);">Anteprima Puzzle</h2>
+          <div id="modal-content" style="background: white; padding: 20px; border-radius: 8px; color: black; display: inline-block;"></div>
+       </div>
     </div>
   `;
 
@@ -195,11 +227,119 @@ export function renderDashboard(root) {
       const activityMixOptions = document.getElementById('activity-mix-options');
       if (selectedCategory === 'Coloring Books') {
         activityMixOptions.style.display = 'block';
+        updateKdpCalculator();
       } else {
         activityMixOptions.style.display = 'none';
       }
     });
   });
+
+  // ── Calcolatore KDP & Preview ───────────────────────────────
+  const updateKdpCalculator = () => {
+     const s = parseInt(document.getElementById('mix-sudoku-qty').value) || 0;
+     const m = parseInt(document.getElementById('mix-maze-qty').value) || 0;
+     const w = parseInt(document.getElementById('mix-wordsearch-qty').value) || 0;
+     
+     const puzzlePages = (s + m + w) * 2;
+     const solutionPages = Math.ceil((s + m + w) / 4);
+     const totalPages = puzzlePages + solutionPages + 2; // + title page front/back
+     
+     let cost = 0;
+     if (totalPages <= 23) {
+         cost = 0; // KDP requires 24 min
+     } else if (totalPages <= 108) {
+         cost = 2.15;
+     } else {
+         cost = 0.85 + (totalPages * 0.012);
+     }
+     
+     document.getElementById('calc-pages').textContent = totalPages;
+     document.getElementById('calc-cost').textContent = cost > 0 ? '$' + cost.toFixed(2) : '---';
+     if (totalPages > 0 && totalPages < 24) document.getElementById('calc-cost').textContent = 'Min 24p';
+  };
+  
+  ['mix-sudoku-qty', 'mix-maze-qty', 'mix-wordsearch-qty'].forEach(id => {
+      document.getElementById(id).addEventListener('input', updateKdpCalculator);
+  });
+
+  // Modal logic
+  const modal = document.getElementById('puzzle-modal');
+  document.getElementById('close-modal').addEventListener('click', () => modal.style.display = 'none');
+  
+  document.querySelectorAll('.btn-preview-puzzle').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+          const type = e.target.dataset.type;
+          const options = {};
+          if (type === 'sudoku') options.diff = document.getElementById('mix-sudoku-diff').value;
+          if (type === 'wordsearch') options.words = document.getElementById('mix-wordsearch-words').value;
+          
+          btn.innerHTML = '⏳';
+          btn.disabled = true;
+          
+          try {
+             const res = await API.previewPuzzle(type, options);
+             renderModalPreview(type, res);
+             modal.style.display = 'flex';
+          } catch(err) {
+             showToast(err.message, 'error');
+          } finally {
+             btn.innerHTML = '👁️';
+             btn.disabled = false;
+          }
+      });
+  });
+
+  function renderModalPreview(type, data) {
+      document.getElementById('modal-title').textContent = \`Anteprima: \${type.toUpperCase()}\`;
+      const mc = document.getElementById('modal-content');
+      
+      if (type === 'sudoku') {
+         const grid = data.puzzle;
+         let html = '<table style="border-collapse: collapse; border: 2px solid black;">';
+         for(let r=0; r<9; r++) {
+             html += '<tr>';
+             for(let c=0; c<9; c++) {
+                 let val = grid[r][c] === "" ? "&nbsp;" : grid[r][c];
+                 let bb = (r%3===2) ? "2px solid black" : "1px solid #ccc";
+                 let br = (c%3===2) ? "2px solid black" : "1px solid #ccc";
+                 html += \`<td style="width:30px; height:30px; text-align:center; font-weight:bold; border-bottom:\${bb}; border-right:\${br};">\${val}</td>\`;
+             }
+             html += '</tr>';
+         }
+         html += '</table>';
+         mc.innerHTML = html;
+      } 
+      else if (type === 'wordsearch') {
+         const grid = data.puzzle;
+         let html = '<table style="border-collapse: collapse;">';
+         for(let r=0; r<grid.length; r++) {
+             html += '<tr>';
+             for(let c=0; c<grid[0].length; c++) {
+                 html += \`<td style="width:25px; height:25px; text-align:center; font-family:monospace; font-size:16px;">\${grid[r][c]}</td>\`;
+             }
+             html += '</tr>';
+         }
+         html += '</table>';
+         mc.innerHTML = html;
+      }
+      else if (type === 'maze') {
+         const grid = data.puzzle;
+         const size = 15;
+         let html = \`<div style="position:relative; width:\${grid[0].length * size}px; height:\${grid.length * size}px;">\`;
+         for(let r=0; r<grid.length; r++) {
+             for(let c=0; c<grid[0].length; c++) {
+                 const cell = grid[r][c];
+                 let bt = cell.top ? '1px solid black' : 'none';
+                 let br = cell.right ? '1px solid black' : 'none';
+                 let bb = cell.bottom ? '1px solid black' : 'none';
+                 let bl = cell.left ? '1px solid black' : 'none';
+                 html += \`<div style="position:absolute; left:\${c*size}px; top:\${r*size}px; width:\${size}px; height:\${size}px; box-sizing:border-box; border-top:\${bt}; border-right:\${br}; border-bottom:\${bb}; border-left:\${bl};"></div>\`;
+             }
+         }
+         html += '</div>';
+         mc.innerHTML = html;
+      }
+  }
 
   // Navigazione
   document.getElementById('btn-archive').addEventListener('click', () => {

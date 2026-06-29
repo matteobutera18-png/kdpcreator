@@ -87,6 +87,13 @@ export const API = {
     });
   },
 
+  async previewPuzzle(type, options) {
+    return this.request('/agents/preview-puzzle', {
+      method: 'POST',
+      body: JSON.stringify({ type, options })
+    });
+  },
+
   // ── Ascolto eventi real-time SSE ──────────────────────────
   listenToJob(jobId, onComplete, onProgress) {
     const eventSource = new EventSource(`/api/agents/stream/${jobId}`);

@@ -8,6 +8,7 @@ const { v4: uuidv4 } = require('uuid');
 
 const { requireAuth }  = require('../middleware/auth');
 const orchestrator     = require('../agents/orchestrator');
+const activityAgent    = require('../agents/activity.agent');
 
 // Mappa dei job attivi: jobId → EventEmitter
 const activeJobs = new Map();
@@ -93,6 +94,30 @@ router.get('/jobs', requireAuth, (req, res) => {
     jobs.push({ id, status: job.status, categoria: job.categoria, createdAt: job.createdAt });
   });
   res.json({ jobs });
+});
+
+// ── POST /api/agents/preview-puzzle — Anteprima Live ────────
+router.post('/preview-puzzle', requireAuth, (req, res) => {
+  try {
+    const { type, options } = req.body;
+    let result = null;
+
+    if (type === 'sudoku') {
+       result = activityAgent.generateSudoku(options.diff || 'Medio');
+    } else if (type === 'maze') {
+       result = { puzzle: activityAgent.generateMaze(20, 20) };
+    } else if (type === 'wordsearch') {
+       let words = options.words ? options.words.split(',').map(s=>s.trim()).filter(s=>s.length>0) : ['MIX','PUZZLE','TEST'];
+       result = activityAgent.generateWordSearch(words, 15);
+    } else {
+       return res.status(400).json({ error: 'Tipo di puzzle sconosciuto.' });
+    }
+
+    res.json(result);
+  } catch (err) {
+    console.error('Errore preview puzzle:', err);
+    res.status(500).json({ error: 'Errore durante la generazione dell\'anteprima.' });
+  }
 });
 
 module.exports = router;

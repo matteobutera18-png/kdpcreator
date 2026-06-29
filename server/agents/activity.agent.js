@@ -25,11 +25,46 @@ function generateSudoku(difficulty) {
     [3,4,5,2,8,6,1,7,9]
   ];
   
-  // To make it slightly random, swap some rows/columns within the same 3x3 block
-  // (Omitted for brevity, assuming standard grid as base)
+  // SHUFFLER MATEMATICO (Anti-Duplicati)
+  function shuffleSudoku(g) {
+      let shuffled = JSON.parse(JSON.stringify(g));
+      
+      // 1. Scambia i numeri (es. tutti i 1 diventano 5 e viceversa)
+      const digits = [1,2,3,4,5,6,7,8,9];
+      for (let i = digits.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [digits[i], digits[j]] = [digits[j], digits[i]];
+      }
+      for(let r=0; r<9; r++) {
+         for(let c=0; c<9; c++) {
+            shuffled[r][c] = digits[shuffled[r][c] - 1];
+         }
+      }
+
+      // 2. Scambia righe nello stesso blocco 3x3
+      for(let block=0; block<3; block++) {
+          let r1 = block*3 + Math.floor(Math.random()*3);
+          let r2 = block*3 + Math.floor(Math.random()*3);
+          let temp = shuffled[r1];
+          shuffled[r1] = shuffled[r2];
+          shuffled[r2] = temp;
+      }
+      
+      // 3. Scambia colonne nello stesso blocco 3x3
+      for(let block=0; block<3; block++) {
+          let c1 = block*3 + Math.floor(Math.random()*3);
+          let c2 = block*3 + Math.floor(Math.random()*3);
+          for(let r=0; r<9; r++) {
+              let temp = shuffled[r][c1];
+              shuffled[r][c1] = shuffled[r][c2];
+              shuffled[r][c2] = temp;
+          }
+      }
+      return shuffled;
+  }
   
-  const solved = JSON.parse(JSON.stringify(baseGrid));
-  const puzzle = JSON.parse(JSON.stringify(baseGrid));
+  const solved = shuffleSudoku(baseGrid);
+  const puzzle = JSON.parse(JSON.stringify(solved));
   
   let blanks = 40; // Medio
   if (difficulty === 'Facile') blanks = 30;
@@ -380,4 +415,4 @@ async function run(scoutResult, updateProgress, slug, activityMix) {
   });
 }
 
-module.exports = { run };
+module.exports = { run, generateSudoku, generateMaze, generateWordSearch };
