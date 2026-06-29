@@ -235,12 +235,13 @@ export function renderDashboard(root) {
     
     try {
       btn.disabled = true;
-      document.getElementById('agent-status-panel').style.display = 'block';
-      document.getElementById('live-preview').style.display = 'block';
+      btn.innerHTML = '<span style="animation: spin 1s linear infinite;">⏳</span> Inizializzazione...';
+      
+      resetAgentStatusUI();
       
       // Resetta UI e Preview
-      document.getElementById('preview-grid').innerHTML = '';
-      document.querySelectorAll('.agent-step').forEach(el => el.classList.remove('active', 'completed'));
+      const previewGrid = document.getElementById('preview-grid');
+      if (previewGrid) previewGrid.innerHTML = '';
       
       // Chiama API
       const res = await API.generateBook(selectedCategory, activityMix);
