@@ -247,7 +247,6 @@ export function renderDashboard(root) {
       const res = await API.generateBook(selectedCategory, activityMix);
       
       const livePreview = document.getElementById('live-preview');
-      const previewGrid = document.getElementById('preview-grid');
       
       if (isActivityMix) {
         livePreview.style.display = 'block';
