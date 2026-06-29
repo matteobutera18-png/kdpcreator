@@ -245,15 +245,15 @@ export function renderDashboard(root) {
       // Chiama API
       const res = await API.generateBook(selectedCategory, activityMix);
       
+      const livePreview = document.getElementById('live-preview');
+      const previewGrid = document.getElementById('preview-grid');
+      
       if (isActivityMix) {
         livePreview.style.display = 'block';
         previewGrid.innerHTML = ''; // resetta le immagini
       } else {
         livePreview.style.display = 'none';
       }
-      
-      // Chiama API
-      const res = await API.generateBook(selectedCategory, subNiche, difficulty, bookType, artStyle);
       
       // Ascolta SSE Stream per questo job
       API.listenToJob(res.jobId, 
