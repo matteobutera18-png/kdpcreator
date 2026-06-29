@@ -30,7 +30,7 @@ const config = {
     },
     global: {
       windowMs: 15 * 60 * 1000,
-      max:      200,
+      max:      10000,
     },
   },
 
