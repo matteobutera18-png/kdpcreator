@@ -14,29 +14,34 @@ const activeJobs = new Map();
 
 // ── POST /api/agents/generate — Avvia pipeline ───────────────
 router.post('/generate', requireAuth, async (req, res) => {
-  const { categoria, activityMix } = req.body;
+  try {
+    const { categoria, activityMix } = req.body;
 
-  if (!categoria) {
-    return res.status(400).json({ error: 'Categoria richiesta.' });
+    if (!categoria) {
+      return res.status(400).json({ error: 'Categoria richiesta.' });
+    }
+
+    const jobId = uuidv4();
+
+    // Registra il job come "in attesa"
+    activeJobs.set(jobId, { status: 'pending', categoria, activityMix, createdAt: new Date().toISOString() });
+
+    // Avvia la pipeline in background (non-blocking)
+    orchestrator.runPipeline(jobId, categoria, activeJobs).catch(err => {
+      const job = activeJobs.get(jobId);
+      if (job) job.status = 'error';
+      console.error(`❌ Pipeline ${jobId} fallita in background:`, err.message);
+    });
+
+    return res.json({
+      jobId,
+      message: `Pipeline avviata per categoria: ${categoria}`,
+      streamUrl: `/api/agents/stream/${jobId}`,
+    });
+  } catch (err) {
+    console.error(`❌ Errore sincrono pipeline:`, err);
+    return res.status(500).json({ error: err.message || 'Errore interno del server durante l\'avvio della generazione.' });
   }
-
-  const jobId = uuidv4();
-
-  // Registra il job come "in attesa"
-  activeJobs.set(jobId, { status: 'pending', categoria, activityMix, createdAt: new Date().toISOString() });
-
-  // Avvia la pipeline in background (non-blocking)
-  orchestrator.runPipeline(jobId, categoria, activeJobs, difficulty).catch(err => {
-    const job = activeJobs.get(jobId);
-    if (job) job.status = 'error';
-    console.error(`❌ Pipeline ${jobId} fallita:`, err.message);
-  });
-
-  return res.json({
-    jobId,
-    message: `Pipeline avviata per categoria: ${categoria}`,
-    streamUrl: `/api/agents/stream/${jobId}`,
-  });
 });
 
 // ── GET /api/agents/stream/:jobId — SSE Real-Time Updates ────
