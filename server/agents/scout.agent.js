@@ -207,6 +207,30 @@ async function tryPuppeteerScrape(categoria) {
   }
 }
 
+async function scrapeCompetitorImage(url) {
+  const puppeteer = require('puppeteer');
+  const browser = await puppeteer.launch({
+    headless: 'new',
+    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-blink-features=AutomationControlled'],
+  });
+  
+  try {
+    const page = await browser.newPage();
+    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
+    await page.setViewport({ width: 1280, height: 1024 });
+
+    await page.goto(url, { waitUntil: 'networkidle2', timeout: 20000 });
+    
+    // Screenshot to base64
+    const base64 = await page.screenshot({ encoding: 'base64', fullPage: false });
+    await browser.close();
+    return `data:image/png;base64,${base64}`;
+  } catch(err) {
+    await browser.close().catch(()=>{});
+    throw new Error(`Scraping screenshot fallito: ${err.message}`);
+  }
+}
+
 // ─────────────────────────────────────────────────────────────
 //  SCORING & SELEZIONE NICCHIA
 // ─────────────────────────────────────────────────────────────
@@ -319,4 +343,4 @@ function getCategorieKDP(categoria) {
   return map[categoria] || ['Self-Help > General', 'Reference > General'];
 }
 
-module.exports = { run, tryPuppeteerScrape };
+module.exports = { run, tryPuppeteerScrape, scrapeCompetitorImage };

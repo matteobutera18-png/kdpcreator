@@ -40,6 +40,10 @@ function generaPromptCopertina(scout) {
   if (scout.benchmark && scout.benchmark.titolo) {
       benchmarkText = `ATTENZIONE BENCHMARK COMPETITOR: Devi superare graficamente il libro "${scout.benchmark.titolo}" che ha questo punto debole: "${scout.benchmark.punti_deboli}". Crea una composizione superiore per impatto visivo e brillantezza dei colori che distrugga la concorrenza. `;
   }
+  
+  if (scout.spyPrompt) {
+      benchmarkText += `\nISTRUZIONI SPIONAGGIO VISIVO CUSTOM: ${scout.spyPrompt} `;
+  }
 
   return `
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

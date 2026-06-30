@@ -17,7 +17,7 @@ const activeJobs = new Map();
 router.post('/generate', requireAuth, async (req, res) => {
   try {
     console.log("Dati ricevuti per la generazione:", JSON.stringify(req.body));
-    const { categoria, activityMix, benchmark } = req.body;
+    const { categoria, activityMix, benchmark, spyData } = req.body;
     
     // DEFENSIVE CODING: fallback per competitors/benchmark
     const competitors = req.body.competitors || [];
@@ -35,7 +35,7 @@ router.post('/generate', requireAuth, async (req, res) => {
     const jobId = uuidv4();
 
     // Registra il job come "in attesa"
-    activeJobs.set(jobId, { status: 'pending', categoria, activityMix, benchmark, createdAt: new Date().toISOString() });
+    activeJobs.set(jobId, { status: 'pending', categoria, activityMix, benchmark, spyData, createdAt: new Date().toISOString() });
 
     // Avvia la pipeline in background (non-blocking)
     orchestrator.runPipeline(jobId, categoria, activeJobs).catch(err => {

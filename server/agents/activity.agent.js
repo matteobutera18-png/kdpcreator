@@ -8,12 +8,20 @@ const path = require('path');
 const PDFDocument = require('pdfkit');
 
 // ── AI HELPER ───────────────────────────────────────────────
-async function callOpenAIJSON(systemPrompt, userPrompt, schemaName, schemaSchema) {
+async function callOpenAIJSON(systemPrompt, userPrompt, schemaName, schemaSchema, base64Image = null) {
     const apiKey = process.env.API_GENERATION_KEY;
     if (!apiKey) throw new Error("API Key mancante");
     
     // Check se stiamo usando un url custom o OpenAI standard
     const url = apiKey.startsWith('sk-') ? 'https://api.openai.com/v1/chat/completions' : 'https://api.openai.com/v1/chat/completions';
+    
+    let userMessageContent = userPrompt;
+    if (base64Image) {
+        userMessageContent = [
+            { type: "text", text: userPrompt },
+            { type: "image_url", image_url: { url: base64Image } }
+        ];
+    }
     
     const res = await fetch(url, {
         method: 'POST',
@@ -25,7 +33,7 @@ async function callOpenAIJSON(systemPrompt, userPrompt, schemaName, schemaSchema
             model: "gpt-4o",
             messages: [
                 { role: "system", content: systemPrompt },
-                { role: "user", content: userPrompt }
+                { role: "user", content: userMessageContent }
             ],
             response_format: {
                 type: "json_schema",
@@ -119,7 +127,7 @@ function proceduralSudoku(difficulty) {
   return { puzzle, solved };
 }
 
-async function generateSudoku(difficulty) {
+async function generateSudoku(difficulty, spyImage = null, spyPrompt = null) {
   try {
       const schema = {
           type: "object",
@@ -136,9 +144,12 @@ async function generateSudoku(difficulty) {
           required: ["puzzle", "solved"],
           additionalProperties: false
       };
-      const sys = "Sei un maestro di logica e matematica. Genera un Sudoku 9x9 valido. Restituisci la griglia 'solved' (numeri da 1 a 9) e la griglia 'puzzle' (sostituisci i buchi con stringhe vuote \"\" in base alla difficoltà). Garantisci che ci sia una sola soluzione matematica valida.";
+      let sys = "Sei un maestro di logica e matematica. Genera un Sudoku 9x9 valido. Restituisci la griglia 'solved' (numeri da 1 a 9) e la griglia 'puzzle' (sostituisci i buchi con stringhe vuote \"\" in base alla difficoltà). Garantisci che ci sia una sola soluzione matematica valida.";
+      if (spyImage || spyPrompt) {
+          sys += `\nATTENZIONE: Tieni in considerazione le seguenti istruzioni visive del competitor: ${spyPrompt || 'Replica e migliora la struttura'}.`;
+      }
       const user = `Genera un Sudoku di difficoltà: ${difficulty}`;
-      const res = await callOpenAIJSON(sys, user, "sudoku_response", schema);
+      const res = await callOpenAIJSON(sys, user, "sudoku_response", schema, spyImage);
       
       // Validazione basica
       if (res.puzzle.length !== 9 || res.solved.length !== 9) throw new Error("Griglia AI invalida");
@@ -303,7 +314,7 @@ function proceduralWordSearch(wordList, size=15) {
   return { puzzle: grid, solved };
 }
 
-async function generateWordSearch(wordList, size=15) {
+async function generateWordSearch(wordList, size=15, spyImage = null, spyPrompt = null) {
   try {
       const schema = {
           type: "object",
@@ -320,14 +331,17 @@ async function generateWordSearch(wordList, size=15) {
           required: ["puzzle", "solved"],
           additionalProperties: false
       };
-      const sys = `Sei un esperto creatore di Crucipuzzle (Word Search). Hai a disposizione una griglia ${size}x${size}. 
+      let sys = `Sei un esperto creatore di Crucipuzzle (Word Search). Hai a disposizione una griglia ${size}x${size}. 
 Regole ferree (Structured Outputs Mode):
 1. 'solved' contiene solo le lettere delle parole nascoste, e stringhe vuote "" altrove.
 2. 'puzzle' contiene 'solved' ma i buchi sono riempiti con lettere casuali per nascondere le parole.
 3. Le parole non devono tagliarsi o mancare pezzi. Nessun overlapping incorretto.
 `;
+      if (spyImage || spyPrompt) {
+          sys += `\nATTENZIONE: Analizza l'immagine del competitor fornita e applica le istruzioni: ${spyPrompt || 'Replica il design'}.`;
+      }
       const user = `Nascondi queste parole nella griglia: ${wordList.join(', ')}`;
-      const res = await callOpenAIJSON(sys, user, "wordsearch_response", schema);
+      const res = await callOpenAIJSON(sys, user, "wordsearch_response", schema, spyImage);
       
       if (res.puzzle.length !== size || res.solved.length !== size) throw new Error("Griglia AI invalida");
       return res;
@@ -409,7 +423,7 @@ async function run(scoutResult, updateProgress, slug, activityMix) {
       for (let i = 0; i < sudokuQty; i++) {
          doc.addPage();
          doc.font('Helvetica-Bold').fontSize(20).text(`Sudoku #${i+1} - ${activityMix.sudoku.diff}`, marginX, marginY - 30, { align: 'center' });
-         const { puzzle, solved } = await generateSudoku(activityMix.sudoku.diff);
+         const { puzzle, solved } = await generateSudoku(activityMix.sudoku.diff, scoutResult.spyImage, scoutResult.spyPrompt);
          drawSudoku(doc, puzzle, marginX, marginY, contentSize);
          solutions.push({ type: 'sudoku', solved, id: i+1 });
          doc.addPage(); // Retro bianco o pattern
@@ -420,6 +434,7 @@ async function run(scoutResult, updateProgress, slug, activityMix) {
       for (let i = 0; i < mazeQty; i++) {
          doc.addPage();
          doc.font('Helvetica-Bold').fontSize(20).text(`Labirinto #${i+1}`, marginX, marginY - 30, { align: 'center' });
+         // Il labirinto vettoriale usa la procedura matematica; le istruzioni visive verrebbero applicate al renderer se ci fosse un SVG dinamico
          const grid = await generateMaze(20, 25);
          drawMaze(doc, grid, marginX, marginY, contentSize);
          solutions.push({ type: 'maze', solved: grid, id: i+1 }); // In un vero motore tracceremmo il path risolutivo
@@ -435,7 +450,7 @@ async function run(scoutResult, updateProgress, slug, activityMix) {
          // Scegliamo 10 parole a caso per ogni puzzle
          const shuffled = words.sort(() => 0.5 - Math.random());
          const selectedWords = shuffled.slice(0, 10);
-         const { puzzle, solved } = await generateWordSearch(selectedWords, 15);
+         const { puzzle, solved } = await generateWordSearch(selectedWords, 15, scoutResult.spyImage, scoutResult.spyPrompt);
          drawWordSearch(doc, puzzle, selectedWords, marginX, marginY, contentSize);
          solutions.push({ type: 'wordsearch', solved, id: i+1 });
          doc.addPage(); 

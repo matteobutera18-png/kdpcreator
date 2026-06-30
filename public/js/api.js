@@ -87,10 +87,10 @@ export const API = {
     });
   },
 
-  async generateBook(categoria, activityMix = null, benchmark = null) {
+  async generateBook(categoria, activityMix = null, benchmark = null, spyData = null) {
     return this.request('/agents/generate', {
       method: 'POST',
-      body: JSON.stringify({ categoria, activityMix, benchmark })
+      body: JSON.stringify({ categoria, activityMix, benchmark, spyData })
     });
   },
 

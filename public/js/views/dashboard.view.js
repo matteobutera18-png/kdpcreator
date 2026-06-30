@@ -156,6 +156,34 @@ export function renderDashboard(root) {
                </tbody>
              </table>
           </div>
+        <!-- FASE 3: SPIONAGGIO VISIVO E CUSTOM PROMPT -->
+        <div id="phase3-spionaggio" style="margin-bottom: 20px; animation: fadeIn 0.3s ease; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
+          <h3 style="color: var(--accent-blue); margin-bottom: 12px; font-size: 1.05rem;">🕵️ Spionaggio Visivo & Custom Prompt</h3>
+          <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 15px;">Carica l'estratto di un competitor o inserisci un URL. L'AI ne analizzerà visivamente le griglie e i font per replicare il successo.</p>
+          
+          <div style="display: flex; flex-direction: column; gap: 15px;">
+            <!-- Upload File -->
+            <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px;">
+               <label class="input-label" style="margin-bottom: 8px;">1. Carica File/Estratto del Competitor (PDF, PNG, JPG)</label>
+               <input type="file" id="spy-upload" accept=".pdf,image/png,image/jpeg" class="input-field" style="padding: 10px; background: rgba(0,0,0,0.3); border: 1px dashed var(--accent-blue);">
+               <div id="spy-preview-container" style="display:none; margin-top: 10px; align-items: flex-end;">
+                  <img id="spy-preview-img" src="" style="max-height: 150px; border-radius: 4px; border: 1px solid var(--accent-secondary);">
+                  <span id="spy-preview-status" style="font-size: 0.8rem; color: var(--accent-secondary); margin-left: 10px; padding-bottom: 5px;"></span>
+               </div>
+            </div>
+
+            <!-- Incolla URL -->
+            <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px;">
+               <label class="input-label" style="margin-bottom: 8px;">OPPURE 2. Incolla URL Prodotto (Amazon)</label>
+               <input type="url" id="spy-url" class="input-field" placeholder="https://www.amazon.it/dp/B0..." style="padding: 10px;">
+            </div>
+            
+            <!-- Custom Prompt -->
+            <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px;">
+               <label class="input-label" style="margin-bottom: 8px;">3. Istruzioni Speciali per l'AI (Custom Prompt)</label>
+               <textarea id="spy-custom-prompt" class="input-field" rows="3" placeholder="Es. Replica la densità dei labirinti ma falli a tema egiziano con scarabei..." style="padding: 10px; resize: vertical;"></textarea>
+            </div>
+          </div>
         </div>
 
         <button class="btn-primary" id="btn-generate">
@@ -429,6 +457,72 @@ export function renderDashboard(root) {
       }
   });
 
+  // ── FASE 3: SPIONAGGIO VISIVO (Upload & PDF parsing) ────────
+  let spyImageBase64 = null;
+  const fileInput = document.getElementById('spy-upload');
+  
+  fileInput.addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      const statusSpan = document.getElementById('spy-preview-status');
+      const imgPreview = document.getElementById('spy-preview-img');
+      const previewContainer = document.getElementById('spy-preview-container');
+      
+      if (!file) {
+          spyImageBase64 = null;
+          previewContainer.style.display = 'none';
+          return;
+      }
+      
+      previewContainer.style.display = 'flex';
+      statusSpan.textContent = 'Elaborazione file in corso...';
+      
+      if (file.type.startsWith('image/')) {
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+              spyImageBase64 = ev.target.result;
+              imgPreview.src = spyImageBase64;
+              statusSpan.textContent = 'Immagine caricata con successo!';
+          };
+          reader.readAsDataURL(file);
+      } else if (file.type === 'application/pdf') {
+          try {
+              statusSpan.textContent = 'Estrazione pagina 1 dal PDF...';
+              const fileReader = new FileReader();
+              fileReader.onload = async function() {
+                  try {
+                      const typedarray = new Uint8Array(this.result);
+                      const pdfjsLib = window['pdfjs-dist/build/pdf'];
+                      if (!pdfjsLib) throw new Error("Libreria pdf.js non trovata");
+                      
+                      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+                      
+                      const pdf = await pdfjsLib.getDocument(typedarray).promise;
+                      const page = await pdf.getPage(1);
+                      const viewport = page.getViewport({scale: 1.5});
+                      
+                      const canvas = document.createElement('canvas');
+                      const context = canvas.getContext('2d');
+                      canvas.height = viewport.height;
+                      canvas.width = viewport.width;
+                      
+                      await page.render({canvasContext: context, viewport: viewport}).promise;
+                      
+                      spyImageBase64 = canvas.toDataURL('image/jpeg', 0.9);
+                      imgPreview.src = spyImageBase64;
+                      statusSpan.textContent = 'PDF decodificato con successo!';
+                  } catch (pdfErr) {
+                      statusSpan.textContent = 'Errore decodifica PDF: ' + pdfErr.message;
+                  }
+              };
+              fileReader.readAsArrayBuffer(file);
+          } catch(err) {
+              statusSpan.textContent = 'Errore durante la lettura del PDF.';
+          }
+      } else {
+          statusSpan.textContent = 'Formato non supportato. Usa PNG, JPG o PDF.';
+      }
+  });
+
   // Avvio Generazione
   document.getElementById('btn-generate').addEventListener('click', async (e) => {
     const btn = e.target.closest('button');
@@ -440,6 +534,15 @@ export function renderDashboard(root) {
     if (selectedRadio && currentCompetitors.length > 0) {
        benchmarkData = currentCompetitors[parseInt(selectedRadio.value)];
     }
+    
+    // Raccoglie i dati di spionaggio visivo
+    const spyUrl = document.getElementById('spy-url').value;
+    const customPrompt = document.getElementById('spy-custom-prompt').value;
+    const spyData = {
+       imageBase64: spyImageBase64,
+       url: spyUrl,
+       customPrompt: customPrompt
+    };
     
     let activityMix = null;
     if (isActivityMix) {
@@ -474,7 +577,7 @@ export function renderDashboard(root) {
       if (previewGrid) previewGrid.innerHTML = '';
       
       // Chiama API
-      const res = await API.generateBook(selectedCategory, activityMix, benchmarkData);
+      const res = await API.generateBook(selectedCategory, activityMix, benchmarkData, spyData);
       
       const livePreview = document.getElementById('live-preview');
       

@@ -122,6 +122,24 @@ async function runPipeline(jobId, categoria, activeJobs) {
     if (job.benchmark) {
         scoutResult.benchmark = job.benchmark;
     }
+    
+    // ── GESTIONE SPIONAGGIO VISIVO (Vision AI) ──
+    let spyImage = job.spyData?.imageBase64 || null;
+    if (job.spyData?.url && !spyImage) {
+        emit(activeJobs, jobId, 'agent_progress', {
+            agent: 'scout',
+            message: '🕵️ Spionaggio Visivo: Estrazione screenshot URL Competitor in corso...',
+            percent: 60,
+        });
+        try {
+            spyImage = await scoutAgent.scrapeCompetitorImage(job.spyData.url);
+        } catch(e) {
+            console.error("Errore scraping immagine competitor:", e);
+        }
+    }
+    
+    scoutResult.spyImage = spyImage;
+    scoutResult.spyPrompt = job.spyData?.customPrompt || null;
 
     emit(activeJobs, jobId, 'agent_progress', {
       agent:   'scout',
