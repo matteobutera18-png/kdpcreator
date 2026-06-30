@@ -117,6 +117,11 @@ async function runPipeline(jobId, categoria, activeJobs) {
     } else {
         scoutResult = scoutAgent.run(categoria, puppeteerData);
     }
+    
+    // Inietta i dati del benchmark (se selezionato)
+    if (job.benchmark) {
+        scoutResult.benchmark = job.benchmark;
+    }
 
     emit(activeJobs, jobId, 'agent_progress', {
       agent:   'scout',

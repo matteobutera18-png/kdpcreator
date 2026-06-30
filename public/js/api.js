@@ -80,10 +80,17 @@ export const API = {
     });
   },
 
-  async generateBook(categoria, activityMix = null) {
+  async analyzeMarket(payload) {
+    return this.request('/agents/analyze-market', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  },
+
+  async generateBook(categoria, activityMix = null, benchmark = null) {
     return this.request('/agents/generate', {
       method: 'POST',
-      body: JSON.stringify({ categoria, activityMix })
+      body: JSON.stringify({ categoria, activityMix, benchmark })
     });
   },
 

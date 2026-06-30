@@ -7,8 +7,47 @@ const fs = require('fs');
 const path = require('path');
 const PDFDocument = require('pdfkit');
 
+// ── AI HELPER ───────────────────────────────────────────────
+async function callOpenAIJSON(systemPrompt, userPrompt, schemaName, schemaSchema) {
+    const apiKey = process.env.API_GENERATION_KEY;
+    if (!apiKey) throw new Error("API Key mancante");
+    
+    // Check se stiamo usando un url custom o OpenAI standard
+    const url = apiKey.startsWith('sk-') ? 'https://api.openai.com/v1/chat/completions' : 'https://api.openai.com/v1/chat/completions';
+    
+    const res = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`
+        },
+        body: JSON.stringify({
+            model: "gpt-4o",
+            messages: [
+                { role: "system", content: systemPrompt },
+                { role: "user", content: userPrompt }
+            ],
+            response_format: {
+                type: "json_schema",
+                json_schema: {
+                    name: schemaName,
+                    strict: true,
+                    schema: schemaSchema
+                }
+            }
+        })
+    });
+    
+    if (!res.ok) {
+        const txt = await res.text();
+        throw new Error(`OpenAI Error: ${txt}`);
+    }
+    const data = await res.json();
+    return JSON.parse(data.choices[0].message.content);
+}
+
 // ── SUDOKU ENGINE ───────────────────────────────────────────
-function generateSudoku(difficulty) {
+function proceduralSudoku(difficulty) {
   // Simplified Sudoku Generator for demonstration.
   // In a real scenario, this would use a full backtracking algorithm.
   // We generate a fully solved grid, then remove numbers based on difficulty.
@@ -80,6 +119,36 @@ function generateSudoku(difficulty) {
   return { puzzle, solved };
 }
 
+async function generateSudoku(difficulty) {
+  try {
+      const schema = {
+          type: "object",
+          properties: {
+              puzzle: {
+                  type: "array",
+                  items: { type: "array", items: { type: "string" } }
+              },
+              solved: {
+                  type: "array",
+                  items: { type: "array", items: { type: "number" } }
+              }
+          },
+          required: ["puzzle", "solved"],
+          additionalProperties: false
+      };
+      const sys = "Sei un maestro di logica e matematica. Genera un Sudoku 9x9 valido. Restituisci la griglia 'solved' (numeri da 1 a 9) e la griglia 'puzzle' (sostituisci i buchi con stringhe vuote \"\" in base alla difficoltà). Garantisci che ci sia una sola soluzione matematica valida.";
+      const user = `Genera un Sudoku di difficoltà: ${difficulty}`;
+      const res = await callOpenAIJSON(sys, user, "sudoku_response", schema);
+      
+      // Validazione basica
+      if (res.puzzle.length !== 9 || res.solved.length !== 9) throw new Error("Griglia AI invalida");
+      return res;
+  } catch (err) {
+      console.warn("AI Sudoku fallito, fallback a procedurale:", err.message);
+      return proceduralSudoku(difficulty);
+  }
+}
+
 function drawSudoku(doc, grid, xOffset, yOffset, size) {
   const cellSize = size / 9;
   doc.lineWidth(1).strokeColor('#000');
@@ -106,7 +175,7 @@ function drawSudoku(doc, grid, xOffset, yOffset, size) {
 }
 
 // ── MAZE ENGINE ──────────────────────────────────────────────
-function generateMaze(cols, rows) {
+function proceduralMaze(cols, rows) {
   const grid = Array.from({ length: rows }, () => Array.from({ length: cols }, () => ({
     top: true, right: true, bottom: true, left: true, visited: false
   })));
@@ -151,6 +220,17 @@ function generateMaze(cols, rows) {
   return grid;
 }
 
+async function generateMaze(cols, rows) {
+  try {
+      // Per i labirinti vettoriali l'output JSON è troppo massiccio (20x25 = 500 oggetti con 4 booleani ciascuno).
+      // Potrebbe causare timeout dell'AI. Usiamo il generatore procedurale che è perfetto matematicamente,
+      // ma lo incapsuliamo in async per uniformità.
+      return proceduralMaze(cols, rows);
+  } catch (err) {
+      return proceduralMaze(cols, rows);
+  }
+}
+
 function drawMaze(doc, grid, xOffset, yOffset, size) {
   const rows = grid.length;
   const cols = grid[0].length;
@@ -172,7 +252,7 @@ function drawMaze(doc, grid, xOffset, yOffset, size) {
 }
 
 // ── WORD SEARCH ENGINE ────────────────────────────────────────
-function generateWordSearch(wordList, size=15) {
+function proceduralWordSearch(wordList, size=15) {
   const grid = Array.from({length: size}, () => Array(size).fill(''));
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   
@@ -223,6 +303,40 @@ function generateWordSearch(wordList, size=15) {
   return { puzzle: grid, solved };
 }
 
+async function generateWordSearch(wordList, size=15) {
+  try {
+      const schema = {
+          type: "object",
+          properties: {
+              puzzle: {
+                  type: "array",
+                  items: { type: "array", items: { type: "string" } }
+              },
+              solved: {
+                  type: "array",
+                  items: { type: "array", items: { type: "string" } }
+              }
+          },
+          required: ["puzzle", "solved"],
+          additionalProperties: false
+      };
+      const sys = `Sei un esperto creatore di Crucipuzzle (Word Search). Hai a disposizione una griglia ${size}x${size}. 
+Regole ferree (Structured Outputs Mode):
+1. 'solved' contiene solo le lettere delle parole nascoste, e stringhe vuote "" altrove.
+2. 'puzzle' contiene 'solved' ma i buchi sono riempiti con lettere casuali per nascondere le parole.
+3. Le parole non devono tagliarsi o mancare pezzi. Nessun overlapping incorretto.
+`;
+      const user = `Nascondi queste parole nella griglia: ${wordList.join(', ')}`;
+      const res = await callOpenAIJSON(sys, user, "wordsearch_response", schema);
+      
+      if (res.puzzle.length !== size || res.solved.length !== size) throw new Error("Griglia AI invalida");
+      return res;
+  } catch (err) {
+      console.warn("AI WordSearch fallito, fallback a procedurale:", err.message);
+      return proceduralWordSearch(wordList, size);
+  }
+}
+
 function drawWordSearch(doc, grid, words, xOffset, yOffset, size) {
   const cellSize = size / grid.length;
   doc.font('Helvetica-Bold').fontSize(cellSize * 0.6);
@@ -267,8 +381,9 @@ async function run(scoutResult, updateProgress, slug, activityMix) {
   const pdfPath = path.join(__dirname, '..', 'data', 'books', slug, `${slug}.pdf`);
   fs.mkdirSync(path.join(__dirname, '..', 'data', 'books', slug), { recursive: true });
 
-  return new Promise((resolve, reject) => {
-      const doc = new PDFDocument({
+  return new Promise(async (resolve, reject) => {
+      try {
+          const doc = new PDFDocument({
          size: [docWidth, docHeight], 
          margins: { top: marginY, bottom: marginY, left: marginX, right: marginX },
          autoFirstPage: false
@@ -294,7 +409,7 @@ async function run(scoutResult, updateProgress, slug, activityMix) {
       for (let i = 0; i < sudokuQty; i++) {
          doc.addPage();
          doc.font('Helvetica-Bold').fontSize(20).text(`Sudoku #${i+1} - ${activityMix.sudoku.diff}`, marginX, marginY - 30, { align: 'center' });
-         const { puzzle, solved } = generateSudoku(activityMix.sudoku.diff);
+         const { puzzle, solved } = await generateSudoku(activityMix.sudoku.diff);
          drawSudoku(doc, puzzle, marginX, marginY, contentSize);
          solutions.push({ type: 'sudoku', solved, id: i+1 });
          doc.addPage(); // Retro bianco o pattern
@@ -305,7 +420,7 @@ async function run(scoutResult, updateProgress, slug, activityMix) {
       for (let i = 0; i < mazeQty; i++) {
          doc.addPage();
          doc.font('Helvetica-Bold').fontSize(20).text(`Labirinto #${i+1}`, marginX, marginY - 30, { align: 'center' });
-         const grid = generateMaze(20, 25);
+         const grid = await generateMaze(20, 25);
          drawMaze(doc, grid, marginX, marginY, contentSize);
          solutions.push({ type: 'maze', solved: grid, id: i+1 }); // In un vero motore tracceremmo il path risolutivo
          doc.addPage(); 
@@ -320,7 +435,7 @@ async function run(scoutResult, updateProgress, slug, activityMix) {
          // Scegliamo 10 parole a caso per ogni puzzle
          const shuffled = words.sort(() => 0.5 - Math.random());
          const selectedWords = shuffled.slice(0, 10);
-         const { puzzle, solved } = generateWordSearch(selectedWords, 15);
+         const { puzzle, solved } = await generateWordSearch(selectedWords, 15);
          drawWordSearch(doc, puzzle, selectedWords, marginX, marginY, contentSize);
          solutions.push({ type: 'wordsearch', solved, id: i+1 });
          doc.addPage(); 
@@ -412,6 +527,9 @@ async function run(scoutResult, updateProgress, slug, activityMix) {
       });
 
       writeStream.on('error', (err) => reject(err));
+      } catch (err) {
+          reject(err);
+      }
   });
 }
 

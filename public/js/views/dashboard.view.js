@@ -132,6 +132,32 @@ export function renderDashboard(root) {
           </div>
         </div>
 
+        <!-- FASE 2: ANALISI COMPETITOR E BENCHMARKING -->
+        <div id="phase2-analysis" style="display: none; margin-bottom: 20px; animation: fadeIn 0.3s ease; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
+          <h3 style="color: var(--accent-secondary); margin-bottom: 12px; font-size: 1.05rem;">📊 Fase 2: Analisi Mercato & Competitor</h3>
+          <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 15px;">Scopri i top seller attuali e seleziona un Benchmark che l'AI dovrà superare per qualità e struttura.</p>
+          
+          <button class="btn-secondary" id="btn-analyze-market" style="width: 100%; border-color: var(--accent-secondary); color: var(--accent-secondary); margin-bottom: 20px;">
+             🔍 ANALIZZA MERCATO E TROVA COMPETITOR
+          </button>
+          
+          <div id="competitor-results" style="display: none;">
+             <table style="width: 100%; text-align: left; border-collapse: collapse; background: rgba(0,0,0,0.3); border-radius: 8px; overflow: hidden; margin-bottom: 15px;">
+               <thead>
+                 <tr style="background: rgba(255,255,255,0.1);">
+                   <th style="padding: 12px; font-size: 0.9rem;">Benchmark</th>
+                   <th style="padding: 12px; font-size: 0.9rem;">Cover</th>
+                   <th style="padding: 12px; font-size: 0.9rem;">Titolo & Dati</th>
+                   <th style="padding: 12px; font-size: 0.9rem;">Punti Deboli (Target)</th>
+                 </tr>
+               </thead>
+               <tbody id="competitors-list">
+                  <!-- Injected via JS -->
+               </tbody>
+             </table>
+          </div>
+        </div>
+
         <button class="btn-primary" id="btn-generate">
           <span style="font-size: 1.5rem;">⚡</span>
           AVVIA GENERAZIONE NUOVO LIBRO
@@ -225,11 +251,14 @@ export function renderDashboard(root) {
       selectedCategory = e.target.dataset.cat;
       
       const activityMixOptions = document.getElementById('activity-mix-options');
+      const phase2Analysis = document.getElementById('phase2-analysis');
       if (selectedCategory === 'Coloring Books') {
         activityMixOptions.style.display = 'block';
+        phase2Analysis.style.display = 'block';
         updateKdpCalculator();
       } else {
         activityMixOptions.style.display = 'none';
+        phase2Analysis.style.display = 'none';
       }
     });
   });
@@ -346,10 +375,71 @@ export function renderDashboard(root) {
     window.location.hash = '#/archive';
   });
 
+  // ── FASE 2: ANALISI MERCATO ─────────────────────────────
+  let currentCompetitors = [];
+  
+  document.getElementById('btn-analyze-market').addEventListener('click', async (e) => {
+      const btn = e.target;
+      btn.innerHTML = '⏳ Analisi in corso...';
+      btn.disabled = true;
+      
+      try {
+         const payload = { categoria: selectedCategory };
+         if (selectedCategory === 'Coloring Books') {
+            payload.mix = {
+               sudoku: document.getElementById('mix-sudoku-qty').value,
+               maze: document.getElementById('mix-maze-qty').value,
+               wordsearch: document.getElementById('mix-wordsearch-qty').value
+            };
+         }
+         
+         const res = await API.analyzeMarket(payload);
+         currentCompetitors = res.competitors || [];
+         
+         const tbody = document.getElementById('competitors-list');
+         tbody.innerHTML = currentCompetitors.map((comp, idx) => `
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+               <td style="padding: 12px; text-align: center;">
+                 <input type="radio" name="benchmark" value="${idx}" ${idx === 0 ? 'checked' : ''} style="transform: scale(1.5);">
+               </td>
+               <td style="padding: 12px;">
+                 <img src="${comp.cover_url || 'https://via.placeholder.com/60x90?text=Cover'}" alt="Cover" style="width: 60px; height: 90px; object-fit: cover; border-radius: 4px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
+               </td>
+               <td style="padding: 12px;">
+                 <strong style="color: white; font-size: 0.95rem; display: block; margin-bottom: 4px;">${comp.titolo}</strong>
+                 <div style="font-size: 0.8rem; color: var(--text-secondary);">
+                    💰 Prezzo: <span style="color: var(--accent-secondary);">$${comp.prezzo}</span><br>
+                    📄 Pagine: ${comp.pagine}<br>
+                    📈 Vendite Stimate: ~${comp.vendite_mensili}/mese
+                 </div>
+               </td>
+               <td style="padding: 12px;">
+                 <span style="font-size: 0.85rem; color: #FF6B6B;">⚠️ ${comp.punti_deboli}</span>
+               </td>
+            </tr>
+         `).join('');
+         
+         document.getElementById('competitor-results').style.display = 'block';
+         
+      } catch (err) {
+         showToast(err.message, 'error');
+      } finally {
+         btn.innerHTML = '🔍 ANALIZZA MERCATO E TROVA COMPETITOR';
+         btn.disabled = false;
+      }
+  });
+
   // Avvio Generazione
   document.getElementById('btn-generate').addEventListener('click', async (e) => {
     const btn = e.target.closest('button');
     const isActivityMix = selectedCategory === 'Coloring Books';
+    
+    // Benchmark Selection
+    let benchmarkData = null;
+    const selectedRadio = document.querySelector('input[name="benchmark"]:checked');
+    if (selectedRadio && currentCompetitors.length > 0) {
+       benchmarkData = currentCompetitors[parseInt(selectedRadio.value)];
+    }
     
     let activityMix = null;
     if (isActivityMix) {
@@ -384,7 +474,7 @@ export function renderDashboard(root) {
       if (previewGrid) previewGrid.innerHTML = '';
       
       // Chiama API
-      const res = await API.generateBook(selectedCategory, activityMix);
+      const res = await API.generateBook(selectedCategory, activityMix, benchmarkData);
       
       const livePreview = document.getElementById('live-preview');
       

@@ -80,7 +80,12 @@ function generaOutline(scoutResult) {
 //  CHIAMATA AI REALE A POLLINATIONS (Con regola anti-loop)
 // ─────────────────────────────────────────────────────────────
 
-async function generaCapitoloAI(titolo, nicchia, contestoPrecedente) {
+async function generaCapitoloAI(titolo, nicchia, contestoPrecedente, benchmark = null) {
+  let benchmarkInstruction = '';
+  if (benchmark && benchmark.punti_deboli) {
+      benchmarkInstruction = `\n6. ATTENZIONE COMPETITOR: Il tuo principale libro concorrente ha questa grave debolezza: "${benchmark.punti_deboli}". Devi assolutamente correggere questo difetto, fornendo una qualità di gran lunga superiore, una struttura migliore e più dettagli utili.`;
+  }
+
   // Costruzione di un Prompt rigoroso per Saggistica Universale
   const prompt = `
 Agisci come un autore bestseller del New York Times di saggistica professionale.
@@ -90,7 +95,7 @@ REGOLE ASSOLUTE:
 2. Scrivi in modo estremamente fluido, senza introdurre con frasi come "In questo capitolo vedremo...".
 3. Fornisci un testo lungo, denso, e di enorme valore pratico (almeno 800 parole).
 4. Nessun testo di riempimento (Lorem Ipsum) e nessuna ripetizione di blocchi (Anti-repetition check attivo).
-5. Scrivi solo il contenuto del capitolo (nessun titolo, nessuna nota introduttiva tua).
+5. Scrivi solo il contenuto del capitolo (nessun titolo, nessuna nota introduttiva tua).${benchmarkInstruction}
 Rispondi esclusivamente con il testo del capitolo in italiano.
   `.trim();
 
@@ -140,7 +145,7 @@ async function run(scoutResult, updateProgress) {
       contenuto = `[CONTENUTO DI SERVIZIO: ${cap.titolo}]\n(Questa pagina verrà compilata in fase di impaginazione finale con i dati dell'autore e dell'editore).`;
     } else {
       // Chiamata vera all'API
-      contenuto = await generaCapitoloAI(cap.titolo, scoutResult.nicchia, contestoProgressivo);
+      contenuto = await generaCapitoloAI(cap.titolo, scoutResult.nicchia, contestoProgressivo, scoutResult.benchmark);
       // Aggiorniamo il contesto per non far ripetere l'AI (teniamo un mini riassunto delle ultime parole)
       contestoProgressivo = cap.titolo + ". " + contenuto.slice(0, 150) + "... ";
     }
