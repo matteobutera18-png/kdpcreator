@@ -290,7 +290,7 @@ export function renderDashboard(root) {
   });
 
   function renderModalPreview(type, data) {
-      document.getElementById('modal-title').textContent = \`Anteprima: \${type.toUpperCase()}\`;
+      document.getElementById('modal-title').textContent = `Anteprima: ${type.toUpperCase()}`;
       const mc = document.getElementById('modal-content');
       
       if (type === 'sudoku') {
@@ -302,7 +302,7 @@ export function renderDashboard(root) {
                  let val = grid[r][c] === "" ? "&nbsp;" : grid[r][c];
                  let bb = (r%3===2) ? "2px solid black" : "1px solid #ccc";
                  let br = (c%3===2) ? "2px solid black" : "1px solid #ccc";
-                 html += \`<td style="width:30px; height:30px; text-align:center; font-weight:bold; border-bottom:\${bb}; border-right:\${br};">\${val}</td>\`;
+                 html += `<td style="width:30px; height:30px; text-align:center; font-weight:bold; border-bottom:${bb}; border-right:${br};">${val}</td>`;
              }
              html += '</tr>';
          }
@@ -315,7 +315,7 @@ export function renderDashboard(root) {
          for(let r=0; r<grid.length; r++) {
              html += '<tr>';
              for(let c=0; c<grid[0].length; c++) {
-                 html += \`<td style="width:25px; height:25px; text-align:center; font-family:monospace; font-size:16px;">\${grid[r][c]}</td>\`;
+                 html += `<td style="width:25px; height:25px; text-align:center; font-family:monospace; font-size:16px;">${grid[r][c]}</td>`;
              }
              html += '</tr>';
          }
@@ -325,7 +325,7 @@ export function renderDashboard(root) {
       else if (type === 'maze') {
          const grid = data.puzzle;
          const size = 15;
-         let html = \`<div style="position:relative; width:\${grid[0].length * size}px; height:\${grid.length * size}px;">\`;
+         let html = `<div style="position:relative; width:${grid[0].length * size}px; height:${grid.length * size}px;">`;
          for(let r=0; r<grid.length; r++) {
              for(let c=0; c<grid[0].length; c++) {
                  const cell = grid[r][c];
@@ -333,7 +333,7 @@ export function renderDashboard(root) {
                  let br = cell.right ? '1px solid black' : 'none';
                  let bb = cell.bottom ? '1px solid black' : 'none';
                  let bl = cell.left ? '1px solid black' : 'none';
-                 html += \`<div style="position:absolute; left:\${c*size}px; top:\${r*size}px; width:\${size}px; height:\${size}px; box-sizing:border-box; border-top:\${bt}; border-right:\${br}; border-bottom:\${bb}; border-left:\${bl};"></div>\`;
+                 html += `<div style="position:absolute; left:${c*size}px; top:${r*size}px; width:${size}px; height:${size}px; box-sizing:border-box; border-top:${bt}; border-right:${br}; border-bottom:${bb}; border-left:${bl};"></div>`;
              }
          }
          html += '</div>';

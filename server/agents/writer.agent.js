@@ -97,10 +97,10 @@ Rispondi esclusivamente con il testo del capitolo in italiano.
   try {
     const apiKey = process.env.API_GENERATION_KEY || '';
     // Aggiungiamo un parametro dummy o header auth se supportato dall'API scelta
-    const url = \`https://text.pollinations.ai/prompt/\${encodeURIComponent(prompt)}\${apiKey ? '?seed=' + apiKey : ''}\`;
+    const url = `https://text.pollinations.ai/prompt/${encodeURIComponent(prompt)}${apiKey ? '?seed=' + apiKey : ''}`;
     
     const response = await fetch(url, {
-       headers: apiKey ? { 'Authorization': \`Bearer \${apiKey}\` } : {}
+       headers: apiKey ? { 'Authorization': `Bearer ${apiKey}` } : {}
     });
     if (!response.ok) throw new Error('API Error');
     let text = await response.text();
